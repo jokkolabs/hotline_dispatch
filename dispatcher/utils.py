@@ -264,11 +264,12 @@ def send_notification(event):
                "Numéro: %(num)s\n"
                "Type: %(type)s\n"
                "Message si SMS: %(sms)s\n\n"
-               "Merci, SOS!"
+               "Merci, SOS!\n\n%(url)s"
                % {'date': event.received_on,
                   'num': clean_phone_number_str(event.identity),
                   'type': event.event_type,
-                  'sms': event.sms_message or ""})
+                  'sms': event.sms_message or "",
+                  'url': "http://%s/" % Site.objects.get_current()})
 
     succ, msg = send_email(recipients=settings.NOTIFICATIONS_RECIPIENTS,
                            message=message, title=title)
