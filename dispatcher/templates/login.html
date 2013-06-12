@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Hotline SOS Démocratie</h1>
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<form class="form-inline" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+{% csrf_token %}
+<legend>Identification</legend>
+<p>Identifiant: {{ form.username }}</p>
+<p>Mot de passe: {{ form.password }}</p>
+<input type="submit" class="btn btn-primary" value="S'identifier" />
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
+

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load dispatcher %}
+
+{% block content %}
+
+{% if error %}
+<p class="alert alert-error">{{ error }}</p>
+{% endif %}
+
+
+
+{% if requested and not error %}
+<div class="received_numbers">
+<legend>Ventillation SMS</legend>
+<p class="btn-group">
+	{% for filter_id, filter_name in filters %}
+    <button {% if filter == filter_id %} disabled="disabled" {% endif %} class="btn btn-filter {% if filter == filter_id %} btn-info{% endif %}" filter="{{ filter_id }}">{{ filter_name }}</button>
+    {% endfor %}
+</p>
+	{% if events %}
+	<table class="table table-condensed table-hover table-bordered table-striped">
+	<thead>
+	<tr>
+	<th class="span2">Date &amp; Heure</th>
+	<th class="span1">Numéro</th>
+	<th class="span6">Message (SMS)</th>
+	<th class="span3">Action</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for event in events %}
+		<tr><td>{{ event.received_on }}</td>
+			<td>{{ event.identity|phone }}</td>
+			<td>{{ event.sms_message|default_if_none:"" }}</td>
+			<td>
+				<p><a href="{% url 'sms_change_type' event.id 'SMS_HOTLINE' filter %}"><button class="btn btn-small"><i class="icon icon-headphones icon-"></i> Hotline</button></a></p>
+				<p><a href="{% url 'sms_change_type' event.id 'SMS_USHAHIDI' filter %}"><button class="btn btn-small"><i class="icon icon-map-marker"></i> Ushahidi</button></a></p>
+				<p><a href="{% url 'sms_change_type' event.id 'SMS_SPAM' filter %}"><button class="btn btn-danger btn-small delete-confirm" event_id="{{ event.id }}" event_identity="{{ event.identity|phone }}"><i class="icon icon-remove icon-white"></i> Supprimer</button></a></p></td>
+		</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	{% else %}
+	<p class="alert alert-warning">Aucun SMS à ventiller pour le môment.</strong></p>
+	{% endif %}
+
+	</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load dispatcher %}
+
+{% block content %}
+
+<form class="form-inline" method="POST" action="{% url 'home' %}">
+{% csrf_token %}
+<legend>À remplir par le volontaire</legend>
+<p class="alert alert-info"><strong>Attention !</strong> Assurez vous de pouvoir noter les numéros avant d'en faire la demande. Il seront immédiatement signalés comme <em>traités par vous</em>. Merci !</p>
+
+<input type="text" class="input-large" placeholder="Numéro de la puce volontaire" name="number"{% if user_number %} value="{{ user_number|phone }}"{% endif %}{% if user.phone_number %} value="{{ user.phone_number|phone }}"{% endif %} />
+<input type="number" class="input-small" name="nb_numbers" value="5" />
+<button type="submit" class="btn">Demander des numéros</button>
+</form>
+
+{% if error %}
+<p class="alert alert-error">{{ error }}</p>
+{% endif %}
+
+{% if requested and not error %}
+<div class="received_numbers">
+<legend>Vos numéros à appeler ({{ user_number|phone }})</legend>
+	{% if events %}
+	<table class="table table-condensed table-hover table-bordered table-striped">
+	<caption>Numéro à appeller</caption>
+	<thead>
+	<tr>
+	<th class="span2">Date &amp; Heure</th>
+	<th class="span2">Numéro</th>
+	<th class="span6">Type &amp; Message (SMS)</th>
+	<th class="span2">Volontaire</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for event in events %}
+		<tr><td>{{ event.received_on }}</td>
+			<td>{{ event.identity|phone }}</td>
+			<td>{{ event.event_type }} {{ event.sms_message|default_if_none:"" }}</td>
+			<td>{{ user_number|phone }} / {{operator|upper}}</td></tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	{% else %}
+	<p class="alert alert-warning">Aucun numéro à appeler pour le moment pour <strong>{{ operator|upper }}</strong></p>
+	{% endif %}
+
+	</div>
+{% endif %}
+{% endblock %}
