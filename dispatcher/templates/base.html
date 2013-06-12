@@ -12,13 +12,21 @@
 </head>
 <body>
 <div class="container">
-<div class="header" class="row">
+
+<div class="row-fluid">
+<div class="span6">
 <h1>Hotline SOS Démocratie</h1>
 <p>
 	<a href="{% url 'home' %}"><button class="btn btn-small">Récupération numéros</button></a>
 	<a href="{% url 'sms' %}"><button class="btn btn-small">Ventillation SMS</button></a>
 	<a href="{% url 'logout' %}" title="Déconnexion"><button class="btn btn-info btn-small"><i class="icon icon-white icon-user"></i> {{ user }}{% if user.phone_number %} ({{ user.phone_number|phone }}){% endif %}</button></a>
 </p>
+</div>
+<div class="span2"></div>
+<div class="span4" style="text-align:right;">
+<h2 style="color:orange;">91 16 16 76</h2>
+<h2 style="color:blue;">67 65 52 52</h2>
+</div>
 </div>
 {% block content %}
 {% endblock %}

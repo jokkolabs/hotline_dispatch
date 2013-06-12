@@ -35,7 +35,7 @@
 	{% for event in events %}
 		<tr><td>{{ event.received_on }}</td>
 			<td>{{ event.identity|phone }}</td>
-			<td>{{ event.event_type }} {{ event.sms_message|default_if_none:"" }}</td>
+			<td><strong>{{ event.event_type }}</strong>{% if event.sms_message %}<br />{{ event.sms_message|default_if_none:"" }}{% endif %}</td>
 			<td>{{ user_number|phone }} / {{operator|upper}}</td></tr>
 	{% endfor %}
 	</tbody>
