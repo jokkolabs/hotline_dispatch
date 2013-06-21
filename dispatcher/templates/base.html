@@ -19,7 +19,8 @@
 <p>
 	<a href="{% url 'home' %}"><button class="btn btn-small">Récupération numéros</button></a>
 	<a href="{% url 'sms' %}"><button class="btn btn-small">Ventillation SMS</button></a>
-	<a href="{% url 'logout' %}" title="Déconnexion"><button class="btn btn-info btn-small"><i class="icon icon-white icon-user"></i> {{ user }}{% if user.phone_number %} ({{ user.phone_number|phone }}){% endif %}</button></a>
+	<a href="{% url 'logout' %}" title="Déconnexion"><button class="btn btn-warning btn-small"><i class="icon icon-white icon-user"></i> {{ user }}{% if user.phone_number %} ({{ user.phone_number|phone }}){% endif %} Déconnexion</button></a>
+	<a href="{% url 'changepwd' %}"><button class="btn btn-small">Changer mot de passe</button></a>
 </p>
 </div>
 <div class="span2"></div>

@@ -20,7 +20,8 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               clean_phone_number,
                               make_ushahidi_request,
                               is_valid_number,
-                              send_notification)
+                              send_notification,
+                              operators)
 
 
 def event_type_from_message(message):
@@ -47,8 +48,12 @@ def event_type_from_message(message):
 @require_POST
 def smssync(request):
 
-    def http_response(is_processed):
+    def http_response(is_processed, messages=[]):
         response = {'payload': {'success': bool(is_processed)}}
+        if messages:
+            response.update({'task': 'send',
+                             'messages': [{'to': to, 'message': text}
+                                          for to, text in messages]})
         return HttpResponse(json.dumps(response))
 
     processed = False
@@ -150,22 +155,28 @@ def ringsync(request, call_number, call_timestamp):
 @login_required(login_url='/login/')
 def dashboard(request):
 
-    context = {}
+    context = {'operators': operators()}
 
     if request.method == 'POST':
 
-        user_number = request.POST.get('number')
-        ind, cleaned_phone_number = clean_phone_number(user_number)
+        # user_number = request.POST.get('number')
+        # ind, cleaned_phone_number = clean_phone_number(user_number)
+
+        # if not cleaned_phone_number in all_volunteers_numbers():
+        #     context.update({'error': "Le numéro %s ne fait pas partie "
+        #                              "des volontaires" % user_number})
+
+        # operator = operator_from_mali_number(user_number)
+
         try:
             nb_numbers = int(request.POST.get('nb_numbers', NB_NUMBERS))
         except ValueError:
             nb_numbers = NB_NUMBERS
 
-        if not cleaned_phone_number in all_volunteers_numbers():
-            context.update({'error': "Le numéro %s ne fait pas partie "
-                                     "des volontaires" % user_number})
-
-        operator = operator_from_mali_number(user_number)
+        operator = request.POST.get('operator_request')
+        if not operator in operators():
+            context.update({'error': "L'opérateur demandé (%s) "
+                                     "n'est pas correct" % operator})
 
         events = HotlineEvent.objects.filter(operator=operator,
                                              processed=False,
@@ -179,7 +190,7 @@ def dashboard(request):
         context.update({'events': events,
                         'requested': True,
                         'operator': operator,
-                        'user_number': user_number,
+                        # 'user_number': user_number,
                         'nb_numbers': nb_numbers})
 
     return render(request, "dashboard.html", context)

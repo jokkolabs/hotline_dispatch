@@ -8,7 +8,9 @@
 <legend>À remplir par le volontaire</legend>
 <p class="alert alert-info"><strong>Attention !</strong> Assurez vous de pouvoir noter les numéros avant d'en faire la demande. Il seront immédiatement signalés comme <em>traités par vous</em>. Merci !</p>
 
-<input type="text" class="input-large" placeholder="Numéro de la puce volontaire" name="number"{% if user_number %} value="{{ user_number|phone }}"{% endif %}{% if user.phone_number %} value="{{ user.phone_number|phone }}"{% endif %} />
+<!-- <input type="text" class="input-large" placeholder="Numéro de la puce volontaire" name="number"{% if user_number %} value="{{ user_number|phone }}"{% endif %}{% if user.phone_number %} value="{{ user.phone_number|phone }}"{% endif %} /> -->
+<select name="operator_request">
+{% for op_name in operators %}<option value="{{ op_name }}">{{ op_name|upper }}</option>{% endfor %}</select>
 <input type="number" class="input-small" name="nb_numbers" value="5" />
 <button type="submit" class="btn">Demander des numéros</button>
 </form>
@@ -19,7 +21,7 @@
 
 {% if requested and not error %}
 <div class="received_numbers">
-<legend>Vos numéros à appeler ({{ user_number|phone }})</legend>
+<legend>Vos numéros à appeler ({{ user }})</legend>
 	{% if events %}
 	<table class="table table-condensed table-hover table-bordered table-striped">
 	<caption>Numéro à appeller</caption>
@@ -34,16 +36,15 @@
 	<tbody>
 	{% for event in events %}
 		<tr><td>{{ event.received_on }}</td>
-			<td>{{ event.identity|phone }}</td>
+			<td><strong>{{ event.identity|phone }}</strong></td>
 			<td><strong>{{ event.event_type }}</strong>{% if event.sms_message %}<br />{{ event.sms_message|default_if_none:"" }}{% endif %}</td>
-			<td>{{ user_number|phone }} / {{operator|upper}}</td></tr>
+			<td>{{ user }} / {{operator|upper}}</td></tr>
 	{% endfor %}
 	</tbody>
 	</table>
 	{% else %}
 	<p class="alert alert-warning">Aucun numéro à appeler pour le moment pour <strong>{{ operator|upper }}</strong></p>
 	{% endif %}
-
 	</div>
 {% endif %}
 {% endblock %}
