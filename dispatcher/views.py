@@ -8,11 +8,13 @@ import json
 import datetime
 
 from django.conf import settings
+from django import forms
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from dispatcher.models import HotlineEvent
 from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
@@ -267,3 +269,43 @@ def sms_change_type(request, event_id, new_type,
         make_ushahidi_request(event)
 
     return redirect('sms_filter', return_to)
+
+
+@login_required(login_url='/login/')
+def change_password(request):
+    context = {}
+
+    class ChangePasswordForm(forms.Form):
+
+        old_password = forms.CharField(label="Mot de passe actuel", max_length=100, widget=forms.PasswordInput)
+        new_password = forms.CharField(label="Nouveau mot de passe", max_length=100, widget=forms.PasswordInput)
+        new_password_verify = forms.CharField(label="Nouveau mot de passe (vérification)", max_length=100, widget=forms.PasswordInput)
+
+        def clean(self):
+            cleaned_data = super(ChangePasswordForm, self).clean()
+
+            new_password = cleaned_data.get('new_password')
+            new_password_verify = cleaned_data.get('new_password_verify')
+
+            if new_password != new_password_verify:
+                raise forms.ValidationError("Les nouveaux mot de passe ne sont pas identiques")
+            return cleaned_data
+
+        def clean_old_password(self):
+            old_password = self.cleaned_data.get('old_password')
+            if not request.user.check_password(old_password):
+                raise forms.ValidationError("Mot de passe incorrect.")
+
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            request.user.set_password(form.cleaned_data['new_password'])
+            request.user.save()
+            messages.success(request, "Le mot de passe a été changé.")
+            return redirect('home')
+    else:
+        form = ChangePasswordForm()
+
+    context.update({'form': form})
+
+    return render(request, "change_password.html", context)

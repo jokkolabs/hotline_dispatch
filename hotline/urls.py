@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^ringsync$', 'dispatcher.views.ringsync_status', name='ringsync_status'),
     url(r'^ringsync/(?P<call_number>[\+a-z0-9A-Z\-\.\_]+)/(?P<call_timestamp>[0-9]+)/?$', 'dispatcher.views.ringsync', name='ringsync'),
 
+    url(r'^password/?$', 'dispatcher.views.change_password', name='changepwd'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

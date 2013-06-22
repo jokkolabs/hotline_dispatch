@@ -24,7 +24,8 @@ NB_CHARS_HOTLINE = 45
 NB_CHARS_USHAHIDI = 100
 NB_CHARS_VALID_NUMBER = 8
 COUNTRY_PREFIX = '223'
-ANSWER = "Merci d'avoir contacte la Hotline SOS Democratie. Un volontaire va vous rappeller bientot (48h max)."
+ANSWER = "Merci d'avoir contacte la Hotline SOS Democratie. " \
+         "Un volontaire va vous rappeller bientot (48h max)."
 ANSWER = "I ni cɛ. SOS Demokrasi mɔgɔ bɛ i wele sɔɔni."
 
 ALL_COUNTRY_CODES = [1242, 1246, 1264, 1268, 1284, 1340, 1345, 1441, 1473,

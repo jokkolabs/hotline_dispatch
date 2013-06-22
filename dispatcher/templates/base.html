@@ -14,21 +14,26 @@
 <div class="container">
 
 <div class="row-fluid">
-<div class="span6">
+<div class="span8">
 <h1>Hotline SOS Démocratie</h1>
 <p>
 	<a href="{% url 'home' %}"><button class="btn btn-small">Récupération numéros</button></a>
 	<a href="{% url 'sms' %}"><button class="btn btn-small">Ventillation SMS</button></a>
+	<a href="{% url 'sms' %}"><button class="btn btn-small">Saisie Appels</button></a>
 	<a href="{% url 'logout' %}" title="Déconnexion"><button class="btn btn-warning btn-small"><i class="icon icon-white icon-user"></i> {{ user }}{% if user.phone_number %} ({{ user.phone_number|phone }}){% endif %} Déconnexion</button></a>
 	<a href="{% url 'changepwd' %}"><button class="btn btn-small">Changer mot de passe</button></a>
 </p>
 </div>
-<div class="span2"></div>
 <div class="span4" style="text-align:right;">
 <h2 style="color:orange;">91 16 16 76</h2>
 <h2 style="color:blue;">67 65 52 52</h2>
 </div>
 </div>
+{% if messages %}
+<div class="messages" style="float: right;">
+{% for message in messages %}<p {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</p>{% endfor %}
+</div>
+{% endif %}
 {% block content %}
 {% endblock %}
 </div>
