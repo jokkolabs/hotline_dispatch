@@ -7,6 +7,7 @@ from __future__ import (unicode_literals, absolute_import,
 import json
 import datetime
 
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse
@@ -21,7 +22,9 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               make_ushahidi_request,
                               is_valid_number,
                               send_notification,
-                              operators)
+                              operators, ANSWER, COUNTRY_PREFIX)
+
+Ring_anwers = []
 
 
 def event_type_from_message(message):
@@ -45,16 +48,28 @@ def event_type_from_message(message):
 
 
 @csrf_exempt
-@require_POST
 def smssync(request):
 
     def http_response(is_processed, messages=[]):
+        global Ring_anwers
         response = {'payload': {'success': bool(is_processed)}}
+        if len(Ring_anwers):
+            while True:
+                try:
+                    identity = Ring_anwers.pop()
+                    messages.append((identity, ANSWER))
+                except IndexError:
+                    break
         if messages:
-            response.update({'task': 'send',
-                             'messages': [{'to': to, 'message': text}
-                                          for to, text in messages]})
+            response['payload'].update({'task': 'send',
+                                        'secret': settings.USHAHIDI_SECRET,
+                                        'messages': [{'to': to, 'message': text}
+                                                     for to, text in messages]})
+        from pprint import pprint as pp ; pp(response)
         return HttpResponse(json.dumps(response))
+
+    if not request.method == 'POST':
+        return http_response(True)
 
     processed = False
 
@@ -104,7 +119,7 @@ def smssync(request):
 
     send_notification(event)
 
-    return http_response(processed)
+    return http_response(processed, messages=[(identity, ANSWER)])
 
 
 def ringsync_status(request):
@@ -114,8 +129,20 @@ def ringsync_status(request):
 
 def ringsync(request, call_number, call_timestamp):
 
+    global Ring_anwers
+
     processed = True
-    operator = operator_from_mali_number(call_number)
+
+    prefix, phone_number = clean_phone_number(call_number)
+    if not prefix:
+        prefix = COUNTRY_PREFIX
+    identity = '+%(prefix)s%(num)s' % {'prefix': prefix, 'num': phone_number}
+
+    # SPAM?
+    if not is_valid_number(identity):
+        return HttpResponse("OK", status=200)
+
+    operator = operator_from_mali_number(identity)
     try:
         # android sends timestamp in microseconds
         received_on = datetime.datetime.fromtimestamp(int(call_timestamp) / 1000)
@@ -123,7 +150,7 @@ def ringsync(request, call_number, call_timestamp):
         received_on = None
 
     try:
-        existing = HotlineEvent.objects.get(identity=call_number,
+        existing = HotlineEvent.objects.get(identity=identity,
                                             processed=False)
     except HotlineEvent.DoesNotExist:
         existing = None
@@ -135,7 +162,7 @@ def ringsync(request, call_number, call_timestamp):
     else:
         try:
             event = HotlineEvent.objects.create(
-                identity=call_number,
+                identity=identity,
                 event_type=HotlineEvent.TYPE_RING,
                 hotline_number=None,
                 received_on=received_on,
@@ -147,6 +174,7 @@ def ringsync(request, call_number, call_timestamp):
             processed = False
 
     if processed:
+        Ring_anwers.append(identity)
         return HttpResponse("OK", status=201)
 
     return HttpResponse("NOT", status=301)
