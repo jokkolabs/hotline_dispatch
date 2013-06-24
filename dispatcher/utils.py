@@ -60,10 +60,10 @@ def is_valid_number(number):
 
 
 def number_is_blacklisted(number):
-    from dispatcher.models import Blacklist
+    from dispatcher.models import BlackList
     identity = join_phone_number(*clean_phone_number(number))
-    if Blacklist.objects.filter(identity=identity).count():
-        b = Blacklist.objects.get(identity=identity)
+    if BlackList.objects.filter(identity=identity).count():
+        b = BlackList.objects.get(identity=identity)
         b.call_count += 1
         b.save()
         return True
