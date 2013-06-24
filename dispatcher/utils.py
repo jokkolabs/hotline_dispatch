@@ -59,6 +59,18 @@ def is_valid_number(number):
     return len(clean_number) >= NB_CHARS_VALID_NUMBER
 
 
+def number_is_blacklisted(number):
+    from dispatcher.models import Blacklist
+    identity = join_phone_number(*clean_phone_number(number))
+    if Blacklist.objects.filter(identity=identity).count():
+        b = Blacklist.objects.get(identity=identity)
+        b.call_count += 1
+        b.save()
+        return True
+    else:
+        return False
+
+
 def phone_number_is_int(number):
     ''' whether number is in international format '''
     if re.match(r'^[+|(]', number):
@@ -151,17 +163,23 @@ def all_volunteers_numbers(operator=None):
 def clean_phone_number_str(number):
     ''' properly formated for visualization: (xxx) xx xx xx xx '''
 
+    print(number)
+
     def format(number):
-        if len(number) & 1:
-            span = 3
-        else:
+        if len(number) % 2 == 0:
             span = 2
-        return u" ".join(["".join(number[i:i + span])
-                           for i in range(0, len(number), span)])
+        else:
+            span = 3
+        # use NBSP
+        return " ".join(["".join(number[i:i + span])
+                        for i in range(0, len(number), span)])
 
     indicator, clean_number = clean_phone_number(number)
+    print(indicator)
+    print(clean_number)
+    print(format(clean_number))
     if indicator:
-        return "(%(ind)s) %(num)s" \
+        return "(%(ind)s) %(num)s" \
                % {'ind': indicator,
                   'num': format(clean_number)}
     return format(clean_number)

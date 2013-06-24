@@ -24,7 +24,8 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               is_valid_number,
                               send_notification,
                               operators, ANSWER, COUNTRY_PREFIX,
-                              join_phone_number)
+                              join_phone_number,
+                              number_is_blacklisted)
 
 LOGIN_URL = '/login/'
 Ring_anwers = []
@@ -88,7 +89,7 @@ def smssync(request):
     operator = operator_from_mali_number(identity)
 
     # skip SPAM
-    if not is_valid_number(identity):
+    if not is_valid_number(identity) or number_is_blacklisted(identity):
         return http_response(True)
 
     try:
@@ -143,7 +144,7 @@ def ringsync(request, call_number, call_timestamp):
     identity = join_phone_number(prefix, phone_number)
 
     # SPAM?
-    if not is_valid_number(identity):
+    if not is_valid_number(identity) or number_is_blacklisted(identity):
         return HttpResponse("OK", status=200)
 
     operator = operator_from_mali_number(identity)
@@ -187,7 +188,8 @@ def ringsync(request, call_number, call_timestamp):
 @login_required(login_url=LOGIN_URL)
 def dashboard(request):
 
-    context = {'operators': [(operator,
+    context = {'page': 'dashboard',
+               'operators': [(operator,
                               HotlineEvent.objects.filter(operator=operator,
                                                           processed=False,
                                                           event_type__in=HotlineEvent.HOTLINE_TYPES).count())
@@ -227,7 +229,7 @@ def dashboard(request):
 @login_required(login_url=LOGIN_URL)
 def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
 
-    context = {}
+    context = {'page': 'sms'}
 
     if not event_filter in HotlineEvent.SMS_TYPES:
         event_filter = HotlineEvent.TYPE_SMS_UNKNOWN
@@ -271,7 +273,7 @@ def sms_change_type(request, event_id, new_type,
 
 @login_required(login_url=LOGIN_URL)
 def change_password(request):
-    context = {}
+    context = {'page': 'password'}
 
     class ChangePasswordForm(forms.Form):
 
@@ -314,49 +316,6 @@ def change_password(request):
     return render(request, "change_password.html", context)
 
 
-class HotlineResponseForm(forms.Form):
-    ''' Used to easily enter data for calls made by volunteers. '''
-
-    request_id = forms.IntegerField(widget=forms.HiddenInput)
-    response_date = forms.DateTimeField(label="Date de l'appel",
-                                        initial=lambda: datetime.datetime.now(),
-                                        help_text="Format: JJ/MM/AAAA",
-                                        widget=forms.SplitDateTimeWidget)
-    duration = forms.IntegerField(label="Durée (approx.)",
-                                  help_text="En nombre de minutes (ex. 2 ou 2,5)")
-    topics = forms.MultipleChoiceField(label="Questions",
-                                       choices=[(t.slug, t.display_name())
-                                       for t in Topics.objects.all()],
-                                       widget=forms.CheckboxSelectMultiple)
-    age = forms.IntegerField(label="Age", required=False)
-    sex = forms.ChoiceField(label="Sexe", choices=HotlineResponse.SEXES.items(),
-                            required=False)
-    region = forms.ChoiceField(label="Région",
-                               choices=[(None, " --- ")] + [(e.slug, e.name)
-                               for e in Entity.objects.filter(type=Entity.TYPE_REGION)])
-    cercle = forms.CharField(label="Cercle", widget=forms.Select, required=False)
-    commune = forms.CharField(label="Commune", widget=forms.Select, required=False)
-    village = forms.CharField(label="Village", widget=forms.Select, required=False)
-
-    def clean_village(self):
-        ''' Returns a Village Entity from the multiple selects '''
-        if not self.cleaned_data['village']:
-            return None
-        print(self.cleaned_data['village'])
-        try:
-            return Entity.objects.get(type=Entity.TYPE_VILLAGE,
-                                      slug=self.cleaned_data['village'])
-        except Entity.DoesNotExist:
-            raise forms.ValidationError("Village incorrect.")
-
-    def clean_request_id(self):
-        ''' Return a HotlineEvent from the id '''
-        try:
-            return HotlineEvent.objects.get(id=int(self.cleaned_data.get('request_id')))
-        except HotlineEvent.DoesNotExist:
-            raise forms.ValidationError("Évennement incorrect")
-
-
 @login_required(login_url=LOGIN_URL)
 def data_entry(request):
     ''' Enter Data for calls made by the volunteers
@@ -366,10 +325,54 @@ def data_entry(request):
         Step 3: Enter data for a specific call.
         This creates a HotlineResponse object. '''
 
-    context = {'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
+    class HotlineResponseForm(forms.Form):
+        ''' Used to easily enter data for calls made by volunteers. '''
+
+        request_id = forms.IntegerField(widget=forms.HiddenInput)
+        response_date = forms.DateTimeField(label="Date de l'appel",
+                                            initial=lambda: datetime.datetime.now(),
+                                            help_text="Format: JJ/MM/AAAA",
+                                            widget=forms.SplitDateTimeWidget)
+        duration = forms.IntegerField(label="Durée (approx.)",
+                                      help_text="En nombre de minutes (ex. 2 ou 2,5)")
+        topics = forms.MultipleChoiceField(label="Questions",
+                                           choices=[(t.slug, t.display_name())
+                                           for t in Topics.objects.all()],
+                                           widget=forms.CheckboxSelectMultiple)
+        age = forms.IntegerField(label="Age", required=False)
+        sex = forms.ChoiceField(label="Sexe", choices=HotlineResponse.SEXES.items(),
+                                required=False)
+        region = forms.ChoiceField(label="Région",
+                                   choices=[(None, " --- ")] + [(e.slug, e.name)
+                                   for e in Entity.objects.filter(type=Entity.TYPE_REGION)])
+        cercle = forms.CharField(label="Cercle", widget=forms.Select, required=False)
+        commune = forms.CharField(label="Commune", widget=forms.Select, required=False)
+        village = forms.CharField(label="Village", widget=forms.Select, required=False)
+
+        def clean_village(self):
+            ''' Returns a Village Entity from the multiple selects '''
+            if not self.cleaned_data['village']:
+                return None
+            print(self.cleaned_data['village'])
+            try:
+                return Entity.objects.get(type=Entity.TYPE_VILLAGE,
+                                          slug=self.cleaned_data['village'])
+            except Entity.DoesNotExist:
+                raise forms.ValidationError("Village incorrect.")
+
+        def clean_request_id(self):
+            ''' Return a HotlineEvent from the id '''
+            try:
+                return HotlineEvent.objects.get(id=int(self.cleaned_data.get('request_id')))
+            except HotlineEvent.DoesNotExist:
+                raise forms.ValidationError("Évennement incorrect")
+
+    context = {'page': 'data_entry',
+               'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
                                                                 processed=True,
                                                                 archived=False).count())
                               for vol in HotlineVolunteer.objects.filter(is_active=True)]}
+
     volunteer = None
     events = []
 
@@ -433,7 +436,7 @@ def entities_api(request, parent_slug=None):
 
 @login_required(login_url=LOGIN_URL)
 def blacklist(request):
-    context = {}
+    context = {'page': 'blackList'}
 
     if request.method == 'POST':
         identity = request.POST.get('identity').strip()

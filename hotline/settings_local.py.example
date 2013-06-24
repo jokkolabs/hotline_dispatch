@@ -37,3 +37,5 @@ EMAIL_PORT = 1025
 EMAIL_SENDER = "Hotline Bot <bot@affoo.ylm>"
 
 NOTIFICATIONS_RECIPIENTS = []
+
+SEND_GENTLE_REPLY = True
