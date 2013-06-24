@@ -73,7 +73,7 @@ def smssync(request):
                                         'messages': [{'to': to, 'message': text}
                                                      for to, text in resp_messages]})
         from pprint import pprint as pp ; pp(response)
-        return HttpResponse(json.dumps(response))
+        return HttpResponse(json.dumps(response), mimetype='application/json')
 
     if not request.method == 'POST':
         return http_response(True)
