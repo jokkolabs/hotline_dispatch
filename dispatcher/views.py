@@ -353,7 +353,6 @@ def data_entry(request):
             ''' Returns a Village Entity from the multiple selects '''
             if not self.cleaned_data['village']:
                 return None
-            print(self.cleaned_data['village'])
             try:
                 return Entity.objects.get(type=Entity.TYPE_VILLAGE,
                                           slug=self.cleaned_data['village'])

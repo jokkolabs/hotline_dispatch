@@ -17,4 +17,4 @@ register = template.Library()
 @stringfilter
 def phone_number_formatter(number):
     ''' format phone number properly for display '''
-    return clean_phone_number_str(number) #.replace(" ", " ")
+    return clean_phone_number_str(number)

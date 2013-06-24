@@ -12,7 +12,7 @@ import requests
 from django.conf import settings
 from django.core import mail
 from django.template import loader, Context
-from django.contrib.sites.models import Site, get_current_site
+from django.contrib.sites.models import Site
 from batbelt import to_timestamp
 
 
@@ -163,8 +163,6 @@ def all_volunteers_numbers(operator=None):
 def clean_phone_number_str(number):
     ''' properly formated for visualization: (xxx) xx xx xx xx '''
 
-    print(number)
-
     def format(number):
         if len(number) % 2 == 0:
             span = 2
@@ -175,9 +173,6 @@ def clean_phone_number_str(number):
                         for i in range(0, len(number), span)])
 
     indicator, clean_number = clean_phone_number(number)
-    print(indicator)
-    print(clean_number)
-    print(format(clean_number))
     if indicator:
         return "(%(ind)s) %(num)s" \
                % {'ind': indicator,
@@ -202,7 +197,6 @@ def make_ushahidi_request(event):
         return False
 
     response = json.loads(req.text)
-    print(response)
     if response.get('payload', {}).get('success', False) in (True, "true"):
         event.processed = True
         event.save()
