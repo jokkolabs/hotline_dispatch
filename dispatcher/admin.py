@@ -7,7 +7,12 @@ from __future__ import (unicode_literals, absolute_import,
 
 from django.contrib import admin
 
-from dispatcher.models import HotlineEvent, HotlineVolunteer
+from dispatcher.models import (HotlineEvent, HotlineVolunteer,
+                               HotlineResponse, Entity, BlackList, Topics)
 
 admin.site.register(HotlineEvent)
 admin.site.register(HotlineVolunteer)
+admin.site.register(HotlineResponse)
+admin.site.register(Entity)
+admin.site.register(BlackList)
+admin.site.register(Topics)

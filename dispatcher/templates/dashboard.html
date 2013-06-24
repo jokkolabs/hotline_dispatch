@@ -10,7 +10,7 @@
 
 <!-- <input type="text" class="input-large" placeholder="Numéro de la puce volontaire" name="number"{% if user_number %} value="{{ user_number|phone }}"{% endif %}{% if user.phone_number %} value="{{ user.phone_number|phone }}"{% endif %} /> -->
 <select name="operator_request">
-{% for op_name in operators %}<option value="{{ op_name }}">{{ op_name|upper }}</option>{% endfor %}</select>
+{% for op_name, op_count in operators %}<option value="{{ op_name }}">{{ op_name|upper }}: {{ op_count }}</option>{% endfor %}</select>
 <input type="number" class="input-small" name="nb_numbers" value="5" />
 <button type="submit" class="btn">Demander des numéros</button>
 </form>

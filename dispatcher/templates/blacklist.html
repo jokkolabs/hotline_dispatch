@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load dispatcher %}
+
+{% block content %}
+
+<form class="form-inline" method="post" action="{% url 'blacklist' %}">
+{% csrf_token %}
+<legend>Ajouter un numéro dans la liste noire</legend>
+<input type="text" class="input" name="identity" placeholder="Numéro à ajouter" />
+<button type="submit" class="btn btn-alert">Ajouter</button>
+</form>
+
+<h2>Liste des numéros de la liste noire</h2>
+<ul>
+{% for blacknum in blacknums %}
+<li>{{ blacknum.identity|phone }} <span class="label label-inverse">{{ blacknum.call_count }}</span></li>
+{% empty %}
+<li>Aucun numéro dans la liste !</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
+

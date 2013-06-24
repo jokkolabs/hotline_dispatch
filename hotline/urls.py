@@ -15,6 +15,12 @@ urlpatterns = patterns('',
 
     url(r'^password/?$', 'dispatcher.views.change_password', name='changepwd'),
 
+    url(r'^data-entry$', 'dispatcher.views.data_entry', name='data_entry'),
+
+    url(r'^blacklist$', 'dispatcher.views.blacklist', name='blacklist'),
+
+    url(r'^entities/(?P<parent_slug>\d{8})/?$', 'dispatcher.views.entities_api', name='entities'),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

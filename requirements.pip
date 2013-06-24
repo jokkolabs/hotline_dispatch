@@ -4,3 +4,5 @@ ipython==0.13.2
 readline==6.2.4.1
 requests==1.2.3
 wsgiref==0.1.2
+django-mptt==0.5.5
+django-bootstrap-form

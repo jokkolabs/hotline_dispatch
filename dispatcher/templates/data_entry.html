@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load dispatcher %}
+{% load bootstrap %}
+
+{% block content %}
+
+<form class="form-inline" method="GET" action="{% url 'data_entry' %}">
+<legend>Saisir les appels effectués par</legend>
+
+<select name="volunteer">
+{% for avolunteer, avolunteercount in volunteers %}<option value="{{ avolunteer.username }}"{% if volunteer %}{% if avolunteer == volunteer %} selected="selected"{% endif  %}{% else %}{%if avolunteer.username == request.user.username %}selected="selected"{% endif %}{% endif %}>{{ avolunteer.full_name }} ({{avolunteercount}})</option>{% endfor %}</select>
+<button type="submit" class="btn">Afficher les appels</button>
+</form>
+
+{% if error %}
+<p class="alert alert-error">{{ error }}</p>
+{% endif %}
+
+{% if events and not error %}
+<div class="received_numbers">
+<legend>Appels de {{ volunteer }} à saisir</legend>
+	{% if events %}
+	<table class="table table-condensed table-hover table-bordered table-striped">
+	<caption>Numéro à appeller</caption>
+	<thead>
+	<tr>
+	<th class="span2">Date &amp; Heure</th>
+	<th class="span2">Numéro</th>
+	<th class="span6">Type &amp; Message (SMS)</th>
+	<th class="span2">Action</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for event in events %}
+		<tr event_id="{{ event.id }}"><td>{{ event.received_on }}</td>
+			<td><strong class="phone_number">{{ event.identity|phone }}</strong></td>
+			<td><strong>{{ event.event_type }}</strong>{% if event.sms_message %}<br />{{ event.sms_message|default_if_none:"" }}{% endif %}</td>
+			<td><button class="btn entrybutton">Saisir l'appel</button></td></tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	{% else %}
+	<p class="alert alert-warning">Aucun numéro à appeler pour le moment pour <strong>{{ operator|upper }}</strong></p>
+	{% endif %}
+	</div>
+<div id="eventModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="eventLabel" aria-hidden="true">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+<h3 id="eventLabel">Saisie Appel</h3>
+</div>
+<div class="modal-body">
+    <form class="form form-horizontal" method="POST" action="{% url 'data_entry' %}?volunteer={{volunteer}}">
+	{% csrf_token %}
+    {{ form|bootstrap }}
+    <div class="control-group">
+    	<div class="controls"><button class="btn btn-primary" type="submit">Enregistrer l'appel</button></div>
+	</div>
+    </form>
+</div>
+<div class="modal-footer">
+<button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+</div>
+</div>
+{% if form.errors %}
+<input type="hidden" id="previous_cercle" value="{{ form.cercle.value }}" />
+<input type="hidden" id="previous_commune" value="{{ form.commune.value }}" />
+<input type="hidden" id="previous_village" value="{{ form.village.value }}" />
+{% endif %}
+
+
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+
+$('.entrybutton').click(function () {
+	var tr =  $(this).parent().parent();
+	var event_id = tr.attr('event_id');
+	var mod = $('#eventModal');
+
+	// Update request ID in form
+	mod.find('#id_request_id').attr('value', event_id);
+
+	// Update title
+	var num = tr.find('.phone_number').html();
+	mod.find('h3').html("Saisie de l'appel au "+ num +" par {{ volunteer }}")
+
+	mod.modal();
+});
+
+{% if form.errors %}
+
+$("#eventModal").modal();
+$("#eventModal").on('hide', function () {
+	window.location = window.location;
+});
+fill_from_previous();
+
+{% endif %}
+{% endblock %}

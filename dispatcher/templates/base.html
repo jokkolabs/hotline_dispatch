@@ -8,7 +8,7 @@
 <link href="/static/css/bootstrap.min.css" rel="stylesheet">
 <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/static/css/imgareaselect-default.css" />
-<link href="/static/css/face.css" rel="stylesheet">
+<link href="/static/css/hotline.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -16,17 +16,18 @@
 <div class="row-fluid">
 <div class="span8">
 <h1>Hotline SOS Démocratie</h1>
-<p>
-	<a href="{% url 'home' %}"><button class="btn btn-small">Récupération numéros</button></a>
-	<a href="{% url 'sms' %}"><button class="btn btn-small">Ventillation SMS</button></a>
-	<a href="{% url 'sms' %}"><button class="btn btn-small">Saisie Appels</button></a>
-	<a href="{% url 'logout' %}" title="Déconnexion"><button class="btn btn-warning btn-small"><i class="icon icon-white icon-user"></i> {{ user }}{% if user.phone_number %} ({{ user.phone_number|phone }}){% endif %} Déconnexion</button></a>
-	<a href="{% url 'changepwd' %}"><button class="btn btn-small">Changer mot de passe</button></a>
-</p>
+<div class="btn-group">
+	<button class="btn btn-small link" href="{% url 'home' %}">Récupération numéros</button>
+	<button class="btn btn-small link" href="{% url 'sms' %}">Ventillation SMS</button>
+	<button class="btn btn-small link" href="{% url 'data_entry' %}">Saisie Appels</button>
+	<button class="btn btn-small link" href="{% url 'blacklist' %}">Liste noire</button>
+	<button class="btn btn-small link" href="{% url 'logout' %}" title="Déconnexion"><i class="icon icon-user"></i> Déconnexion ({{ user }})</button>
+	<button class="btn btn-small link" href="{% url 'changepwd' %}">Changer mot de passe</button>
+</div>
 </div>
 <div class="span4" style="text-align:right;">
 <h2 style="color:orange;">91 16 16 76</h2>
-<h2 style="color:blue;">67 65 52 52</h2>
+<h2 style="color:blue;">67 56 52 52</h2>
 </div>
 </div>
 {% if messages %}
@@ -41,6 +42,10 @@
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function (){
+	$('.link').click(function () {
+		window.location = $(this).attr('href');
+	})
+
 	var sms_filter_url = "{%url 'sms_filter' 'AAA' %}";
 	$('.delete-confirm').click(function(e) {
 	  // e.preventDefault();
@@ -55,8 +60,78 @@ $(document).ready(function (){
 		console.log(new_url);
 		window.location = new_url;
 	});
-});
 
+	function changeSelectContent(selectElement, content) {
+		selectElement.empty();
+		$.each(content, function (idx, entity) {
+			selectElement.append($("<option value='"+entity.slug +"'>" + entity.name + "</option>"));
+		});
+	}
+
+	function changeRegion(regionElem, cercle_id, commune_id, village_id) {
+		var region_id = regionElem.val();
+		var cercle = $('#id_cercle');
+		$.getJSON('/entities/' + region_id).done(function (response) {
+			changeSelectContent(cercle, response);
+			if (cercle_id !== undefined && cercle_id !== null) {
+				cercle.val(cercle_id);
+			}
+			changeCercle(cercle, commune_id, village_id);
+		});
+	}
+
+	function changeCercle(cercleElem, commune_id, village_id) {
+		var cercle_id = cercleElem.val();
+		var commune = $('#id_commune');
+		$.getJSON('/entities/' + cercle_id).done(function (response) {
+			changeSelectContent(commune, response);
+			if (commune_id !== undefined && commune_id !== null) {
+				commune.val(commune_id);
+			}
+			changeCommune(commune, village_id);
+		});
+	}
+
+	function changeCommune(communeElem, village_id) {
+		var commune_id = communeElem.val();
+		var village = $('#id_village');
+		$.getJSON('/entities/' + commune_id).done(function (response) {
+			changeSelectContent(village, response);
+			if (village_id !== undefined && village_id !== null) {
+				village.val(village_id);
+			}
+		});
+	}
+
+	function fill_from_previous() {
+		var cercle_id = $('#previous_cercle').val();
+		var commune_id = $('#previous_commune').val();
+		var village_id = $('#previous_village').val();
+		if (cercle_id !== undefined && cercle_id !== null) {
+			changeRegion($('#id_region'), cercle_id, commune_id, village_id);
+		}
+	}
+
+	$('#id_region').change(function () {
+		var region_id = $(this).val();
+		var cercle = $('#id_cercle');
+		console.log("Changed region: " + region_id);
+		$.getJSON('/entities/' + region_id).done(function (response) {
+			changeSelectContent(cercle, response);
+			changeCercle($("#id_cercle"));
+		});
+	});
+
+	$('#id_cercle').change(function () {
+		changeCercle($(this));
+	});
+
+	$('#id_commune').change(function () {
+		changeCommune($(this));
+	});
+
+	{% block extra_js %}{% endblock %}
+});
 </script>
 </body>
 </html>

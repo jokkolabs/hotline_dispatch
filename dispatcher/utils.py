@@ -24,9 +24,10 @@ NB_CHARS_HOTLINE = 45
 NB_CHARS_USHAHIDI = 100
 NB_CHARS_VALID_NUMBER = 8
 COUNTRY_PREFIX = '223'
-ANSWER = "Merci d'avoir contacte la Hotline SOS Democratie. " \
-         "Un volontaire va vous rappeller bientot (48h max)."
-ANSWER = "I ni cɛ. SOS Demokrasi mɔgɔ bɛ i wele sɔɔni."
+ANSWER = ("Merci d'avoir contacte la Hotline SOS Democratie. "
+          "Un volontaire va vous rappeller bientot (24h max) "
+          "-- I ni cɛ. SOS Demokrasi mɔgɔ bɛ i wele sɔɔni.")
+# ANSWER = "I ni cɛ. SOS Demokrasi mɔgɔ bɛ i wele sɔɔni."
 
 ALL_COUNTRY_CODES = [1242, 1246, 1264, 1268, 1284, 1340, 1345, 1441, 1473,
                      1599, 1649, 1664, 1670, 1671, 1684, 1758, 1767, 1784,
@@ -90,6 +91,12 @@ def clean_phone_number(number):
         return (indicator, clean_number)
 
     return (None, clean_number)
+
+
+def join_phone_number(prefix, number, force_intl=True):
+    if not prefix and force_intl:
+        prefix = COUNTRY_PREFIX
+    return '+%s%s' % (prefix, number)
 
 
 def operator_from_mali_number(number, default=MALITEL):
