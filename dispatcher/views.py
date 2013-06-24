@@ -27,7 +27,8 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               join_phone_number,
                               number_is_blacklisted,
                               count_unknown_sms,
-                              count_unarchived_sms)
+                              count_unarchived_sms,
+                              count_unprocessed)
 
 LOGIN_URL = '/login/'
 Ring_anwers = []
@@ -191,7 +192,8 @@ def dashboard(request):
 
     context = {'page': 'dashboard',
                'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms,
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed(),
                'operators': [(operator,
                               HotlineEvent.objects.filter(operator=operator,
                                                           processed=False,
@@ -233,7 +235,8 @@ def dashboard(request):
 def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
 
     context = {'page': 'sms', 'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms}
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed()}
 
     if not event_filter in HotlineEvent.SMS_TYPES:
         event_filter = HotlineEvent.TYPE_SMS_UNKNOWN
@@ -278,7 +281,8 @@ def sms_change_type(request, event_id, new_type,
 @login_required(login_url=LOGIN_URL)
 def change_password(request):
     context = {'page': 'password', 'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms}
+               'nbunprocessed': count_unprocessed(),
+               'nbarchive': count_unarchived_sms()}
 
     class ChangePasswordForm(forms.Form):
 
@@ -372,7 +376,8 @@ def data_entry(request):
                 raise forms.ValidationError("Évennement incorrect")
 
     context = {'page': 'data_entry', 'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms,
+               'nbunprocessed': count_unprocessed(),
+               'nbarchive': count_unarchived_sms(),
                'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
                                                                 processed=True,
                                                                 archived=False).count())
@@ -442,7 +447,8 @@ def entities_api(request, parent_slug=None):
 @login_required(login_url=LOGIN_URL)
 def blacklist(request):
     context = {'page': 'blackList',
-               'nbarchive': count_unarchived_sms,
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed(),
                'nbsms': count_unknown_sms()}
 
     if request.method == 'POST':
