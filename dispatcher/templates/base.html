@@ -18,10 +18,10 @@
 <h1>Hotline SOS Démocratie</h1>
 <div class="btn-group">
 	<button class="btn btn-small link {% ifequal page 'dashboard' %}active{% endifequal %}" href="{% url 'home' %}">Récupération numéros</button>
-	<button class="btn btn-small link {% ifequal page 'sms' %}active{% endifequal %}" href="{% url 'sms' %}">Ventillation SMS</button>
+	<button class="btn btn-small link {% ifequal page 'sms' %}active{% endifequal %}" href="{% url 'sms' %}">Ventillation SMS <span class="label label-info">{{ nbsms }}</span></button>
 	<button class="btn btn-small link {% ifequal page 'data_entry' %}active{% endifequal %}" href="{% url 'data_entry' %}">Saisie Appels</button>
 	<button class="btn btn-small link {% ifequal page 'blacklist' %}active{% endifequal %}" href="{% url 'blacklist' %}">Liste noire</button>
-	<button class="btn btn-small link" href="{% url 'logout' %}" title="Déconnexion"><i class="icon icon-user"></i> Déconnexion ({{ user }})</button>
+	<button class="btn btn-small link label label-warning" href="{% url 'logout' %}" title="Déconnexion"><i class="icon icon-user"></i> Déconnexion ({{ user }})</button>
 	<button class="btn btn-small link {% ifequal page 'password' %}active{% endifequal %}" href="{% url 'changepwd' %}">Changer mot de passe</button>
 </div>
 </div>

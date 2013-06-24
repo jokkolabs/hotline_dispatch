@@ -25,7 +25,8 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               send_notification,
                               operators, ANSWER, COUNTRY_PREFIX,
                               join_phone_number,
-                              number_is_blacklisted)
+                              number_is_blacklisted,
+                              count_unknown_sms)
 
 LOGIN_URL = '/login/'
 Ring_anwers = []
@@ -140,7 +141,6 @@ def ringsync(request, call_number, call_timestamp):
     prefix, phone_number = clean_phone_number(call_number)
     if not prefix:
         prefix = COUNTRY_PREFIX
-    # identity = '+%(prefix)s%(num)s' % {'prefix': prefix, 'num': phone_number}
     identity = join_phone_number(prefix, phone_number)
 
     # SPAM?
@@ -189,6 +189,7 @@ def ringsync(request, call_number, call_timestamp):
 def dashboard(request):
 
     context = {'page': 'dashboard',
+               'nbsms': count_unknown_sms(),
                'operators': [(operator,
                               HotlineEvent.objects.filter(operator=operator,
                                                           processed=False,
@@ -229,7 +230,7 @@ def dashboard(request):
 @login_required(login_url=LOGIN_URL)
 def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
 
-    context = {'page': 'sms'}
+    context = {'page': 'sms', 'nbsms': count_unknown_sms()}
 
     if not event_filter in HotlineEvent.SMS_TYPES:
         event_filter = HotlineEvent.TYPE_SMS_UNKNOWN
@@ -273,7 +274,7 @@ def sms_change_type(request, event_id, new_type,
 
 @login_required(login_url=LOGIN_URL)
 def change_password(request):
-    context = {'page': 'password'}
+    context = {'page': 'password', 'nbsms': count_unknown_sms()}
 
     class ChangePasswordForm(forms.Form):
 
@@ -366,7 +367,7 @@ def data_entry(request):
             except HotlineEvent.DoesNotExist:
                 raise forms.ValidationError("Évennement incorrect")
 
-    context = {'page': 'data_entry',
+    context = {'page': 'data_entry', 'nbsms': count_unknown_sms(),
                'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
                                                                 processed=True,
                                                                 archived=False).count())
@@ -408,7 +409,7 @@ def data_entry(request):
 
             event_request.save()
 
-            messages.success(request, "Appel <em>%s</em> enregistré" % event_request)
+            messages.success(request, "Appel %s enregistré" % event_request)
 
             # redirect to the page with the volunteer GET param
             response = redirect('data_entry')
@@ -435,7 +436,8 @@ def entities_api(request, parent_slug=None):
 
 @login_required(login_url=LOGIN_URL)
 def blacklist(request):
-    context = {'page': 'blackList'}
+    context = {'page': 'blackList',
+               'nbsms': count_unknown_sms()}
 
     if request.method == 'POST':
         identity = request.POST.get('identity').strip()

@@ -51,6 +51,12 @@ ALL_COUNTRY_CODES = [1242, 1246, 1264, 1268, 1284, 1340, 1345, 1441, 1473,
                      976, 977, 98, 992, 993, 994, 995, 996, 998]
 
 
+def count_unknown_sms():
+    from dispatcher.models import HotlineEvent
+    return HotlineEvent.objects.filter(processed=False,
+                                       event_type=HotlineEvent.TYPE_SMS_UNKNOWN).count()
+
+
 def is_valid_number(number):
     ''' checks if number is valid for HOTLINE_NUMBERS
 
