@@ -9,9 +9,7 @@ import datetime
 
 from django.conf import settings
 from django import forms
-from django.forms import ModelForm
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -21,7 +19,6 @@ from dispatcher.models import (HotlineEvent, HotlineVolunteer, HotlineResponse,
                                Topics, Entity, BlackList)
 from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               operator_from_mali_number,
-                              all_volunteers_numbers,
                               clean_phone_number,
                               make_ushahidi_request,
                               is_valid_number,

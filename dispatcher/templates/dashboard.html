@@ -8,7 +8,6 @@
 <legend>À remplir par le volontaire</legend>
 <p class="alert alert-info"><strong>Attention !</strong> Assurez vous de pouvoir noter les numéros avant d'en faire la demande. Il seront immédiatement signalés comme <em>traités par vous</em>. Merci !</p>
 
-<!-- <input type="text" class="input-large" placeholder="Numéro de la puce volontaire" name="number"{% if user_number %} value="{{ user_number|phone }}"{% endif %}{% if user.phone_number %} value="{{ user.phone_number|phone }}"{% endif %} /> -->
 <select name="operator_request">
 {% for op_name, op_count in operators %}<option value="{{ op_name }}">{{ op_name|upper }}: {{ op_count }}</option>{% endfor %}</select>
 <input type="number" class="input-small" name="nb_numbers" value="5" />
