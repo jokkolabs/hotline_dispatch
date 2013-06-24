@@ -57,6 +57,11 @@ def count_unknown_sms():
                                        event_type=HotlineEvent.TYPE_SMS_UNKNOWN).count()
 
 
+def count_unarchived_sms():
+    from dispatcher.models import HotlineEvent
+    return HotlineEvent.objects.filter(processed=True, archived=False).count()
+
+
 def is_valid_number(number):
     ''' checks if number is valid for HOTLINE_NUMBERS
 
