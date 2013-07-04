@@ -343,7 +343,7 @@ def data_entry(request):
                                             help_text="Format: JJ/MM/AAAA",
                                             widget=forms.SplitDateTimeWidget)
         duration = forms.IntegerField(label="Durée (approx.)",
-                                      help_text="En nombre de minutes (ex. 2)")
+                                      help_text="En nombre de minutes arrondis (ex. 2 pour 1min:35s et 1 pour 1min:29s)")
         topics = forms.MultipleChoiceField(label="Questions",
                                            choices=[(t.slug, t.display_name())
                                            for t in Topics.objects.all()],
