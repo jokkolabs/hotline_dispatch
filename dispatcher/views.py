@@ -364,7 +364,6 @@ def data_entry(request):
             levels = ['region', 'cercle', 'commune', 'village']
             while len(levels) and (location is None or location == '00000000'):
                 location = self.cleaned_data.get(levels.pop())
-            print(location)
             try:
                 return Entity.objects.get(slug=location)
             except Entity.DoesNotExist:
