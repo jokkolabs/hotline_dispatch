@@ -6,48 +6,60 @@
 <table class="table table-condensed table-hover table-bordered table-striped">
     <tbody>
         <tr>
-            <th class="span8">Dernier événement</th>
+            <th class="span8">Dernier appel</th>
             <td class="span4">{{ last_event.received_on }}</td>
         </tr>
         <tr>
-            <th>Nombre d'événements non traiter</th>
+            <th>Nombre d'appel non traité</th>
             <td>{{ untreated_count }}</td>
         </tr>
         <tr>
-            <th>Nombre d'événements à saisir</th>
+            <th>Nombre de rappel à saisir</th>
             <td>{{ not_archived }}</td>
         </tr>
         <tr>
-            <th>Nombre total d'événements</th>
+            <th>Nombre total d'appel</th>
             <td class="total">{{ total_events }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.CALL_ME.0 }}</th>
+            <th class="ident">Total Orange</th>
+            <td>{{ count_orange }}</td>
+        </tr>
+        <tr>
+            <th class="ident">Total Malitel</th>
+            <td>{{ count_malitel }}</td>
+        </tr>
+        <tr>
+            <th class="ident">{{ per_event_type.CALL_ME.0 }}</th>
             <td>{{ per_event_type.CALL_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.CHARGE_ME.0 }}</th>
+            <th class="ident">{{ per_event_type.CHARGE_ME.0 }}</th>
             <td>{{ per_event_type.CHARGE_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.RING.0 }}</th>
+            <th class="ident">{{ per_event_type.RING.0 }}</th>
             <td>{{ per_event_type.RING.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
+            <th class="ident">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
             <td>{{ per_event_type.SMS_UNKNOWN.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.SMS_HOTLINE.0 }}</th>
+            <th class="ident">{{ per_event_type.SMS_HOTLINE.0 }}</th>
             <td>{{ per_event_type.SMS_HOTLINE.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
+            <th class="ident">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
             <td>{{ per_event_type.SMS_USHAHIDI.1 }}</td>
         </tr>
         <tr>
-            <th class="event_type">{{ per_event_type.SMS_SPAM.0 }}</th>
+            <th class="ident">{{ per_event_type.SMS_SPAM.0 }}</th>
             <td>{{ per_event_type.SMS_SPAM.1 }}</td>
+        </tr>
+        <tr>
+            <th>Total par sexes (Homme/Femme/Inconnu)</th>
+            <td>{{ sex_male }} H, {{sex_female}} F, {{sex_unknow}} Inconnus</td>
         </tr>
     </tbody>
     </table>

@@ -478,6 +478,12 @@ def status(request):
                'nbsms': count_unknown_sms()}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
+    for operator in operators():
+        if operator == 'orange':
+            count_orange = HotlineEvent.objects.filter(operator=operator).count()
+        else:
+            count_malitel = HotlineEvent.objects.filter(operator=operator).count()
+
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
         per_event_type.update({event_type[0]:
@@ -486,12 +492,20 @@ def status(request):
     untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()
     not_archived = HotlineEvent.objects.filter(archived=False).count()
+    sex_unknow = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count()
+    sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
+    sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
     context.update({'last_event': last_event,
                     'total_events': total_events,
                     'per_event_type': per_event_type,
                     'untreated': untreated,
+                    'count_orange': count_orange,
+                    'count_malitel': count_malitel,
                     'untreated_count': untreated_count,
+                    'sex_unknow': sex_unknow,
+                    'sex_male': sex_male,
+                    'sex_female': sex_female,
                     'not_archived': not_archived})
 
     return render(request, "status.html", context)

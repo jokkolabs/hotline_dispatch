@@ -14,9 +14,14 @@ font-weight: bold;
 
 }
 
-table tr .event_type{
+table tr .ident{
      text-indent: 3em;
 }
+
 /*.controls ul li label:first-line {
 	font-weight: bold;
 }*/
+
+body.status .table:first-of-type td {
+    text-align: center;
+};
