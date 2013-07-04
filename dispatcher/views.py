@@ -471,7 +471,10 @@ def blacklist(request):
 
 @login_required(login_url=LOGIN_URL)
 def status(request):
-    context = {'page': 'status'}
+    context = {'page': 'status',
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed(),
+               'nbsms': count_unknown_sms()}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
     per_event_type = {}
