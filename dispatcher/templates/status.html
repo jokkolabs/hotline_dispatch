@@ -6,48 +6,48 @@
 <table class="table table-condensed table-hover table-bordered table-striped">
     <tbody>
         <tr>
-            <th class="span2">Dernier événement</th>
-            <td class="span2">{{ last_event.received_on }}</td>
+            <th class="span8">Dernier événement</th>
+            <td class="span4">{{ last_event.received_on }}</td>
         </tr>
         <tr>
-            <th class="span2">Nombre total d'événements</th>
-            <td class="span2">{{ total_events }}</td>
+            <th>Nombre d'événements non traiter</th>
+            <td>{{ untreated_count }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.CALL_ME.0 }}</th>
-            <td class="span2">{{ per_event_type.CALL_ME.1 }}</td>
+            <th>Nombre d'événements à saisir</th>
+            <td>{{ not_archived }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.CHARGE_ME.0 }}</th>
-            <td class="span2">{{ per_event_type.CHARGE_ME.1 }}</td>
+            <th>Nombre total d'événements</th>
+            <td class="total">{{ total_events }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.RING.0 }}</th>
-            <td class="span2">{{ per_event_type.RING.1 }}</td>
+            <th class="event_type">{{ per_event_type.CALL_ME.0 }}</th>
+            <td>{{ per_event_type.CALL_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
-            <td class="span2">{{ per_event_type.SMS_UNKNOWN.1 }}</td>
+            <th class="event_type">{{ per_event_type.CHARGE_ME.0 }}</th>
+            <td>{{ per_event_type.CHARGE_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.SMS_HOTLINE.0 }}</th>
-            <td class="span2">{{ per_event_type.SMS_HOTLINE.1 }}</td>
+            <th class="event_type">{{ per_event_type.RING.0 }}</th>
+            <td>{{ per_event_type.RING.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
-            <td class="span2">{{ per_event_type.SMS_USHAHIDI.1 }}</td>
+            <th class="event_type">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
+            <td>{{ per_event_type.SMS_UNKNOWN.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">{{ per_event_type.SMS_SPAM.0 }}</th>
-            <td class="span2">{{ per_event_type.SMS_SPAM.1 }}</td>
+            <th class="event_type">{{ per_event_type.SMS_HOTLINE.0 }}</th>
+            <td>{{ per_event_type.SMS_HOTLINE.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">Nombre d'événements non traiter</th>
-            <td class="span2">{{ untreated_count }}</td>
+            <th class="event_type">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
+            <td>{{ per_event_type.SMS_USHAHIDI.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">Nombre d'événements à saisir</th>
-            <td class="span2">{{ not_archived }}</td>
+            <th class="event_type">{{ per_event_type.SMS_SPAM.0 }}</th>
+            <td>{{ per_event_type.SMS_SPAM.1 }}</td>
         </tr>
     </tbody>
     </table>

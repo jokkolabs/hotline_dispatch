@@ -9,6 +9,14 @@
 	list-style-type: none;
 }
 
+table tr .total{
+font-weight: bold;
+
+}
+
+table tr .event_type{
+     text-indent: 3em;
+}
 /*.controls ul li label:first-line {
 	font-weight: bold;
 }*/
