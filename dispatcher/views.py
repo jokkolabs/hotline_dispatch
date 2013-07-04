@@ -350,7 +350,7 @@ def data_entry(request):
                                            widget=forms.CheckboxSelectMultiple)
         age = forms.IntegerField(label="Age", required=False)
         sex = forms.ChoiceField(label="Sexe", choices=HotlineResponse.SEXES.items(),
-                                required=False)
+                                required=False, initial=HotlineResponse.SEX_UNKNOWN)
         region = forms.ChoiceField(label="Région",
                                    choices=[(None, " --- ")] + [(e.slug, e.name)
                                    for e in Entity.objects.filter(type=Entity.TYPE_REGION)])
@@ -360,13 +360,15 @@ def data_entry(request):
 
         def clean_village(self):
             ''' Returns a Village Entity from the multiple selects '''
-            if not self.cleaned_data['village']:
-                return None
+            location = None
+            levels = ['region', 'cercle', 'commune', 'village']
+            while len(levels) and (location is None or location == '00000000'):
+                location = self.cleaned_data.get(levels.pop())
+            print(location)
             try:
-                return Entity.objects.get(type=Entity.TYPE_VILLAGE,
-                                          slug=self.cleaned_data['village'])
+                return Entity.objects.get(slug=location)
             except Entity.DoesNotExist:
-                raise forms.ValidationError("Village incorrect.")
+                raise forms.ValidationError("Localité incorrecte.")
 
         def clean_request_id(self):
             ''' Return a HotlineEvent from the id '''
