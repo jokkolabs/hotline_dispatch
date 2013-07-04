@@ -480,7 +480,7 @@ def status_page(request):
     total_events = HotlineEvent.objects.count()
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
-        per_event_type.update({"%s" % event_type[0]: total_per_event_type(event_type[0])})
+        per_event_type.update({"%s" % event_type[0]: (event_type[1], total_per_event_type(event_type[0]))})
 
     untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()

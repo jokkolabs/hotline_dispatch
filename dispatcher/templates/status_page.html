@@ -14,43 +14,44 @@
             <td class="span2">{{ total_events }}</td>
         </tr>
         <tr>
-            <th class="span2">Peux-tu me rappler?</th>
-            <td class="span2">{{ per_event_type.CALL_ME }}</td>
+            <th class="span2">{{ per_event_type.CALL_ME.0 }}</th>
+            <td class="span2">{{ per_event_type.CALL_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">Peux-tu recharger mon compte?</th>
-            <td class="span2">{{ per_event_type.CHARGE_ME }}</td>
+            <th class="span2">{{ per_event_type.CHARGE_ME.0 }}</th>
+            <td class="span2">{{ per_event_type.CHARGE_ME.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">Bip.</th>
-            <td class="span2">{{ per_event_type.RING }}</td>
+            <th class="span2">{{ per_event_type.RING.0 }}</th>
+            <td class="span2">{{ per_event_type.RING.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">SMS à déterminer.</th>
-            <td class="span2">{{ per_event_type.SMS_UNKNOWN }}</td>
+            <th class="span2">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
+            <td class="span2">{{ per_event_type.SMS_UNKNOWN.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">SMS (Hotline).</th>
-            <td class="span2">{{ per_event_type.SMS_HOTLINE }}</td>
+            <th class="span2">{{ per_event_type.SMS_HOTLINE.0 }}</th>
+            <td class="span2">{{ per_event_type.SMS_HOTLINE.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">SMS (Ushahidi).</th>
-            <td class="span2">{{ per_event_type.SMS_USHAHIDI }}</td>
+            <th class="span2">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
+            <td class="span2">{{ per_event_type.SMS_USHAHIDI.1 }}</td>
         </tr>
         <tr>
-            <th class="span2">SMS (SPAM)</th>
-            <td class="span2">{{ per_event_type.SMS_SPAM }}</td>
+            <th class="span2">{{ per_event_type.SMS_SPAM.0 }}</th>
+            <td class="span2">{{ per_event_type.SMS_SPAM.1 }}</td>
         </tr>
-                <tr>
+        <tr>
             <th class="span2">Nombre d'événements non traiter</th>
             <td class="span2">{{ untreated_count }}</td>
         </tr>
-                <tr>
+        <tr>
             <th class="span2">Nombre d'événements à saisir</th>
             <td class="span2">{{ not_archived }}</td>
         </tr>
     </tbody>
     </table>
+
 {% if untreated %}
 <h2>Listes des événements non traité</h2>
     <table class="table table-condensed table-hover table-bordered table-striped">
