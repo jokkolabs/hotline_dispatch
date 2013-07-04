@@ -469,7 +469,8 @@ def blacklist(request):
     return render(request, "blacklist.html", context)
 
 
-def status_page(request):
+@login_required(login_url=LOGIN_URL)
+def status(request):
     context = {'page': 'status'}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
@@ -489,4 +490,4 @@ def status_page(request):
                     'untreated_count': untreated_count,
                     'not_archived': not_archived})
 
-    return render(request, "status_page.html", context)
+    return render(request, "status.html", context)
