@@ -469,18 +469,14 @@ def blacklist(request):
     return render(request, "blacklist.html", context)
 
 
-def total_per_event_type(event_type):
-    total = HotlineEvent.objects.filter(event_type=event_type).count()
-    return total
-
-
 def status_page(request):
-    context = {'page': 'status_page'}
+    context = {'page': 'status'}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
-        per_event_type.update({"%s" % event_type[0]: (event_type[1], total_per_event_type(event_type[0]))})
+        per_event_type.update({event_type[0]:
+                               (event_type[1], HotlineEvent.objects.filter(event_type=event_type[0]).count())})
 
     untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()

@@ -19,7 +19,7 @@ urlpatterns = patterns('',
 
     url(r'^blacklist$', 'dispatcher.views.blacklist', name='blacklist'),
 
-    url(r'^status_page$', 'dispatcher.views.status_page', name='status_page'),
+    url(r'^status$', 'dispatcher.views.status_page', name='status'),
 
     url(r'^entities/(?P<parent_slug>\d{8})/?$', 'dispatcher.views.entities_api', name='entities'),
 
