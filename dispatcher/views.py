@@ -72,7 +72,7 @@ def smssync(request):
                                         'secret': settings.USHAHIDI_SECRET,
                                         'messages': [{'to': to, 'message': text}
                                                      for to, text in resp_messages]})
-        from pprint import pprint as pp ; pp(response)
+        from pprint import pprint as pp; pp(response)
         return HttpResponse(json.dumps(response), mimetype='application/json')
 
     if not request.method == 'POST':
@@ -215,7 +215,7 @@ def dashboard(request):
         events = HotlineEvent.objects.filter(operator=operator,
                                              processed=False,
                                              event_type__in=HotlineEvent.HOTLINE_TYPES) \
-                                     .order_by('-received_on')[:nb_numbers]
+                                     .order_by('received_on')[:nb_numbers]
 
         for event in events:
             event.processed = True
@@ -343,7 +343,7 @@ def data_entry(request):
                                             help_text="Format: JJ/MM/AAAA",
                                             widget=forms.SplitDateTimeWidget)
         duration = forms.IntegerField(label="Durée (approx.)",
-                                      help_text="En nombre de minutes (ex. 2 ou 2,5)")
+                                      help_text="En nombre de minutes arrondis (ex. 2 pour 1min:35s et 1 pour 1min:29s)")
         topics = forms.MultipleChoiceField(label="Questions",
                                            choices=[(t.slug, t.display_name())
                                            for t in Topics.objects.all()],
@@ -438,8 +438,9 @@ def data_entry(request):
 def entities_api(request, parent_slug=None):
     ''' JSON list of Entity whose parent has the slug provided '''
 
-    response = [{'slug': e.slug, 'name': e.name}
-                for e in Entity.objects.filter(parent__slug=parent_slug)]
+    response = [{'slug': '00000000', 'name': "---"}] + \
+        [{'slug': e.slug, 'name': e.name}
+            for e in Entity.objects.filter(parent__slug=parent_slug)]
 
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
@@ -466,3 +467,30 @@ def blacklist(request):
     context.update({'blacknums': BlackList.objects.all()})
 
     return render(request, "blacklist.html", context)
+
+
+@login_required(login_url=LOGIN_URL)
+def status(request):
+    context = {'page': 'status',
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed(),
+               'nbsms': count_unknown_sms()}
+    last_event = HotlineEvent.objects.order_by('-received_on')[0]
+    total_events = HotlineEvent.objects.count()
+    per_event_type = {}
+    for event_type in HotlineEvent.TYPES:
+        per_event_type.update({event_type[0]:
+                               (event_type[1], HotlineEvent.objects.filter(event_type=event_type[0]).count())})
+
+    untreated = HotlineEvent.objects.filter(processed=False)
+    untreated_count = untreated.count()
+    not_archived = HotlineEvent.objects.filter(archived=False).count()
+
+    context.update({'last_event': last_event,
+                    'total_events': total_events,
+                    'per_event_type': per_event_type,
+                    'untreated': untreated,
+                    'untreated_count': untreated_count,
+                    'not_archived': not_archived})
+
+    return render(request, "status.html", context)

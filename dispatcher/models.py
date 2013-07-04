@@ -23,10 +23,10 @@ class HotlineEvent(models.Model):
 
     TYPE_CALL_ME = 'CALL_ME'
     TYPE_CHARGE_ME = 'CHARGE_ME'
+    TYPE_RING = 'RING'
     TYPE_SMS_UNKNOWN = 'SMS_UNKNOWN'
     TYPE_SMS_USHAHIDI = 'SMS_USHAHIDI'
     TYPE_SMS_HOTLINE = 'SMS_HOTLINE'
-    TYPE_RING = 'RING'
     TYPE_SMS_SPAM = 'SMS_SPAM'
     TYPES = ((TYPE_CALL_ME, "Peux-tu me rappler?"),
              (TYPE_CHARGE_ME, "Peux-tu recharger mon compte?"),
@@ -67,9 +67,11 @@ class HotlineVolunteer(AbstractUser):
 
 class HotlineResponse(models.Model):
 
+    SEX_UNKNOWN = 'U'
     SEX_MALE = 'M'
     SEX_FEMALE = 'F'
     SEXES = {
+        SEX_UNKNOWN: 'Inconnu',
         SEX_MALE: "Homme",
         SEX_FEMALE: "Femme"
     }
@@ -78,8 +80,8 @@ class HotlineResponse(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     response_date = models.DateTimeField()
     age = models.PositiveIntegerField(null=True, blank=True)
-    sex = models.CharField(max_length='1', choices=SEXES.items())
-    duration = models.FloatField()
+    sex = models.CharField(max_length='1', choices=SEXES.items(), default=SEX_UNKNOWN)
+    duration = models.PositiveIntegerField()
     location = models.ForeignKey('Entity', null=True, blank=True)
     topics = models.ManyToManyField('Topics', related_name='responses')
 
