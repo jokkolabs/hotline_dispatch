@@ -3,11 +3,10 @@
 {% load bootstrap %}
 
 {% block content %}
-
 <form class="form-inline" method="GET" action="{% url 'data_entry' %}">
 <legend>Saisir les appels effectués par</legend>
 <select name="volunteer">
-{% for avolunteer, avolunteercount in volunteers %}<option value="{{ avolunteer.username }}"{% if volunteer %}{% if avolunteer == volunteer %} selected="selected"{% endif  %}{% else %}{%if avolunteer.username == request.user.username %}selected="selected"{% endif %}{% endif %}>{{ avolunteer.full_name }} ({{avolunteercount}})</option>{% endfor %}</select>
+{% for avolunteer, avolunteercount in volunteers %}<option value="{{ avolunteer.username }}"{% if volunteer %}{% if avolunteer == volunteer %} selected="selected" {% endif  %}{% else %}{% if avolunteer ==  user %} selected="selected" {% endif %}{% endif %}>{{ avolunteer.full_name }} ({{avolunteercount}})</option>{% endfor %}</select>
 <button type="submit" class="btn">Afficher les appels</button>
 </form>
 
