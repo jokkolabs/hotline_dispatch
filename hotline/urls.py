@@ -19,6 +19,8 @@ urlpatterns = patterns('',
 
     url(r'^blacklist$', 'dispatcher.views.blacklist', name='blacklist'),
 
+    url(r'^status_page$', 'dispatcher.views.status_page', name='status_page'),
+
     url(r'^entities/(?P<parent_slug>\d{8})/?$', 'dispatcher.views.entities_api', name='entities'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
