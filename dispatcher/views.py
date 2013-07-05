@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from batbelt import to_timestamp
 
 from dispatcher.models import (HotlineEvent, HotlineVolunteer, HotlineResponse,
                                Topics, Entity, BlackList)
@@ -26,9 +27,11 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               operators, ANSWER, COUNTRY_PREFIX,
                               join_phone_number,
                               number_is_blacklisted,
+                              datetime_range,
                               count_unknown_sms,
                               count_unarchived_sms,
-                              count_unprocessed)
+                              count_unprocessed,
+                              EMPTY_ENTITY)
 
 LOGIN_URL = '/login/'
 Ring_anwers = []
@@ -75,7 +78,6 @@ def smssync(request):
                                         'secret': settings.USHAHIDI_SECRET,
                                         'messages': [{'to': to, 'message': text}
                                                      for to, text in resp_messages]})
-        from pprint import pprint as pp; pp(response)
         return HttpResponse(json.dumps(response), mimetype='application/json')
 
     if not request.method == 'POST':
@@ -342,20 +344,20 @@ def data_entry(request):
 
         request_id = forms.IntegerField(widget=forms.HiddenInput)
         response_date = forms.DateTimeField(label="Date de l'appel",
-                                            initial=lambda: datetime.datetime.now(),
                                             help_text="Format: JJ/MM/AAAA",
                                             widget=forms.SplitDateTimeWidget)
         duration = forms.IntegerField(label="Durée (approx.)",
-                                      help_text="En nombre de minutes arrondis (ex. 2 pour 1min:35s et 1 pour 1min:29s)")
+                                      help_text="En nombre de minutes arrondis "
+                                                "(ex. 2 pour 1min:35s et 1 pour 1min:29s)")
         topics = forms.MultipleChoiceField(label="Questions",
                                            choices=[(t.slug, t.display_name())
-                                           for t in Topics.objects.all()],
+                                           for t in Topics.objects.order_by('slug')],
                                            widget=forms.CheckboxSelectMultiple)
         age = forms.IntegerField(label="Age", required=False)
         sex = forms.ChoiceField(label="Sexe", choices=HotlineResponse.SEXES.items(),
                                 required=False, initial=HotlineResponse.SEX_UNKNOWN)
         region = forms.ChoiceField(label="Région",
-                                   choices=[(None, " --- ")] + [(e.slug, e.name)
+                                   choices=[(EMPTY_ENTITY, "INCONNUE")] + [(e.slug, e.name)
                                    for e in Entity.objects.filter(type=Entity.TYPE_REGION)])
         cercle = forms.CharField(label="Cercle", widget=forms.Select, required=False)
         commune = forms.CharField(label="Commune", widget=forms.Select, required=False)
@@ -363,10 +365,15 @@ def data_entry(request):
 
         def clean_village(self):
             ''' Returns a Village Entity from the multiple selects '''
+            is_empty = lambda l: l is None or l == EMPTY_ENTITY
             location = None
             levels = ['region', 'cercle', 'commune', 'village']
-            while len(levels) and (location is None or location == '00000000'):
-                location = self.cleaned_data.get(levels.pop())
+            while len(levels) and is_empty(location):
+                location = self.cleaned_data.get(levels.pop()) or None
+
+            if is_empty(location):
+                return None
+
             try:
                 return Entity.objects.get(slug=location)
             except Entity.DoesNotExist:
@@ -442,7 +449,7 @@ def data_entry(request):
 def entities_api(request, parent_slug=None):
     ''' JSON list of Entity whose parent has the slug provided '''
 
-    response = [{'slug': '00000000', 'name': "---"}] + \
+    response = [{'slug': EMPTY_ENTITY, 'name': "INCONNU"}] + \
         [{'slug': e.slug, 'name': e.name}
             for e in Entity.objects.filter(parent__slug=parent_slug)]
 
@@ -485,7 +492,8 @@ def status(request):
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
         per_event_type.update({event_type[0]:
-                               (event_type[1], HotlineEvent.objects.filter(event_type=event_type[0]).count())})
+                               (event_type[1],
+                                HotlineEvent.objects.filter(event_type=event_type[0]).count())})
 
     untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()
@@ -507,3 +515,31 @@ def status(request):
                     'not_archived': not_archived})
 
     return render(request, "status.html", context)
+
+
+def graph_data(request):
+
+    date_start_end = lambda d, s=True: \
+        datetime.datetime(int(d.year), int(d.month), int(d.day),
+                          0 if s else 23, 0 if s else 59, 0 if s else 59)
+
+    try:
+        start = HotlineEvent.objects.order_by('received_on')[0].received_on
+    except IndexError:
+        start = datetime.datetime.today()
+
+    requests = []
+    responses = []
+
+    for date in datetime_range(start):
+        ts = int(to_timestamp(date)) * 1000
+        qcount = HotlineEvent.objects.filter(received_on__gte=date_start_end(date),
+                                             received_on__lt=date_start_end(date, False)).count()
+        scount = HotlineResponse.objects.filter(response_date__gte=date_start_end(date),
+                                                response_date__lt=date_start_end(date, False)).count()
+        requests.append((ts, qcount))
+        responses.append((ts, scount))
+    data_event = {'requests': requests,
+                  'responses': responses}
+
+    return HttpResponse(json.dumps(data_event), mimetype='application/json')

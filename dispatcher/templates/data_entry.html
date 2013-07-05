@@ -31,7 +31,7 @@
 	</thead>
 	<tbody>
 	{% for event in events %}
-		<tr event_id="{{ event.id }}"><td>{{ event.received_on }}</td>
+		<tr event_id="{{ event.id }}" event_date="{{ event.received_on.isoformat }}"><td>{{ event.received_on }}</td>
 			<td><strong class="phone_number">{{ event.identity|phone }}</strong></td>
 			<td><strong>{{ event.event_type }}</strong>{% if event.sms_message %}<br />{{ event.sms_message|default_if_none:"" }}{% endif %}</td>
 			<td><button class="btn entrybutton">Saisir l'appel</button></td></tr>
@@ -72,10 +72,65 @@
 
 
 {% block extra_js %}
+var form_error = false;
+
+function updateFormUI(mod, form_error, event_date) {
+
+    function zeroEd(value) {
+        if (value < 10)
+            return '0' + value;
+        return value;
+    }
+
+    function getDateFormat(d) {
+        var day = zeroEd(d.getUTCDate());
+        var month = zeroEd(d.getUTCMonth() + 1);
+        var year = d.getUTCFullYear();
+        return day + '/' + month + '/' + year;
+    }
+
+    function getTimeFormat(d) {
+        var hours = zeroEd(d.getHours());
+        var minutes = zeroEd(d.getMinutes());
+        return hours + ':' + minutes + ':00';
+    }
+
+    // datepicker
+    var existing_date_picker = $("#datepicker");
+    var existing_date = $('#id_response_date_0');
+
+    if (!form_error) {
+        var date_fmt = getDateFormat(event_date);
+        var time_fmt = getTimeFormat(event_date);
+
+        var existing_date = $('#id_response_date_0');
+        var existing_time = $('#id_response_date_1');
+
+        existing_date.val(date_fmt);
+        existing_time.val(time_fmt);
+    }
+
+    if (existing_date_picker.length == 0) {
+        var new_date_picker = $('<div id="datepicker" class="input-append"><input id="id_response_date_0" name="response_date_0" data-format="dd/MM/yyyy" type="text" value="'+ existing_date.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
+        existing_date.replaceWith(new_date_picker);
+    }
+    mod.find('#datepicker').datetimepicker({pickTime: false});
+
+    // timepicker
+    var existing_time_picker = $("#timepicker");
+    var existing_time = $('#id_response_date_1');
+
+    if (!existing_time_picker.length) {
+        var new_time_picker = $('<div id="timepicker" class="input-append"><input id="id_response_date_1" name="response_date_1" data-format="hh:mm:ss" type="text" value="'+ existing_time.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
+        existing_time.replaceWith(new_time_picker);
+    }
+    mod.find('#timepicker').datetimepicker({pickDate: false});
+}
 
 $('.entrybutton').click(function () {
 	var tr =  $(this).parent().parent();
-	var event_id = tr.attr('event_id');
+    var event_id = tr.attr('event_id');
+	var event_date_str = tr.attr('event_date');
 	var mod = $('#eventModal');
 
 	// Update request ID in form
@@ -85,24 +140,16 @@ $('.entrybutton').click(function () {
 	var num = tr.find('.phone_number').html();
 	mod.find('h3').html("Saisie de l'appel au "+ num +" par {{ volunteer }}");
 
-    // datepicker
-    var existing_date = $('#id_response_date_0');
-    var new_date_picker = $('<div id="datepicker" class="input-append"><input id="id_response_date_0" name="response_date_0" data-format="dd/MM/yyyy" type="text" value="'+ existing_date.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
-    existing_date.replaceWith(new_date_picker);
-    mod.find('#datepicker').datetimepicker({pickTime: false});
+    // update date
+    var event_date = new Date(event_date_str);
 
-    // timepicker
-    var existing_time = $('#id_response_date_1');
-    var new_time_picker = $('<div id="timepicker" class="input-append"><input id="id_response_date_1" name="response_date_1" data-format="hh:mm:ss" type="text" value="'+ existing_time.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
-    existing_time.replaceWith(new_time_picker);
-    mod.find('#timepicker').datetimepicker({pickDate: false});
-
+    updateFormUI(mod, false, event_date);
 
 	mod.modal();
 });
 
 {% if form.errors %}
-
+updateFormUI($("#eventModal"), true, null);
 $("#eventModal").modal();
 $("#eventModal").on('hide', function () {
 	window.location = window.location;

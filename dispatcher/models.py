@@ -20,6 +20,7 @@ class HotlineEvent(models.Model):
 
     class Meta:
         unique_together = [('identity', 'received_on')]
+        get_latest_by = 'received_on'
 
     TYPE_CALL_ME = 'CALL_ME'
     TYPE_CHARGE_ME = 'CHARGE_ME'
@@ -66,6 +67,9 @@ class HotlineVolunteer(AbstractUser):
 
 
 class HotlineResponse(models.Model):
+
+    class Meta:
+        get_latest_by = 'response_date'
 
     SEX_UNKNOWN = 'U'
     SEX_MALE = 'M'

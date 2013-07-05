@@ -7,8 +7,9 @@ from __future__ import (unicode_literals, absolute_import,
 import re
 import json
 import smtplib
-import requests
+import datetime
 
+import requests
 from django.conf import settings
 from django.core import mail
 from django.template import loader, Context
@@ -27,6 +28,7 @@ COUNTRY_PREFIX = '223'
 ANSWER = ("Merci d'avoir contacte la Hotline SOS Democratie. "
           "Un volontaire va vous rappeller bientot (24h max).")
 # ANSWER = "I ni cɛ. SOS Demokrasi mɔgɔ bɛ i wele sɔɔni."
+EMPTY_ENTITY = '00000000'
 
 ALL_COUNTRY_CODES = [1242, 1246, 1264, 1268, 1284, 1340, 1345, 1441, 1473,
                      1599, 1649, 1664, 1670, 1671, 1684, 1758, 1767, 1784,
@@ -316,3 +318,20 @@ def send_notification(event):
 
 def operators():
     return settings.HOTLINE_NUMBERS.keys()
+
+
+def datetime_range(start, stop=None, days=1):
+    ''' return a list of dates incremented by 'days'
+
+        start/stop = date or datetime
+        days = increment number of days '''
+
+    # stop at 00h00 today so we don't have an extra
+    # point for today if the last period ends today.
+    stop = stop or datetime.datetime(*datetime.date.today().timetuple()[:-4])
+
+    while(start < stop):
+        yield start
+        start += datetime.timedelta(days)
+
+    yield stop
