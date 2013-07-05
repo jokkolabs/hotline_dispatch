@@ -55,24 +55,24 @@ class CustomHotlineEvent(admin.ModelAdmin):
     list_display = ("identity", "event_type", "received_on", "created_on",
                     "hotline_number", "sms_message", "processed", "operator",
                     "volunteer", "archived")
-    list_filter = ('created_on', 'event_type', 'operator', 'volunteer')
+    list_filter = ("created_on", "event_type", "operator", "volunteer")
 
 
 class CustomHotlineResponse(admin.ModelAdmin):
     list_display = ("created_on", "response_date", "age", "sex",
                     "duration", "location",)
-    list_filter = ('created_on', 'sex', 'location')
+    list_filter = ("created_on", "sex", "location")
 
 
 class CustomEntity(admin.ModelAdmin):
     list_display = ("slug", "name", "type", "latitude",
                     "longitude", "parent",)
-    list_filter = ('parent',)
+    list_filter = ("parent",)
 
 
 class CustomTopics(admin.ModelAdmin):
     list_display = ("slug", "name", "category",)
-    list_filter = ('category',)
+    list_filter = ("category",)
 
 
 class CustomBlackList(admin.ModelAdmin):
