@@ -39,12 +39,15 @@ def event_type_from_message(message):
     call_me_tpl_orange = "Peux-tu me rappeler au numero suivant"
     charge_me_tpl_orange = "Peux tu recharger mon compte au numero suivant"
     call_me_tpl_malitel = "Rappellez moi s'il vous plait au numero suivant"
+    am_tpl_orange = "Messagerie Vocale:"
 
     if message.startswith(call_me_tpl_orange) \
        or message.startswith(call_me_tpl_malitel):
         return HotlineEvent.TYPE_CALL_ME
     if message.startswith(charge_me_tpl_orange):
         return HotlineEvent.TYPE_CHARGE_ME
+    if message.startswith(am_tpl_orange):
+        return HotlineEvent.TYPE_RING
     if not message:
         return HotlineEvent.TYPE_RING
     if len(message) < NB_CHARS_HOTLINE:
