@@ -28,7 +28,7 @@ class HotlineEvent(models.Model):
     TYPE_SMS_USHAHIDI = 'SMS_USHAHIDI'
     TYPE_SMS_HOTLINE = 'SMS_HOTLINE'
     TYPE_SMS_SPAM = 'SMS_SPAM'
-    TYPES = ((TYPE_CALL_ME, "Peux-tu me rappler?"),
+    TYPES = ((TYPE_CALL_ME, "Peux-tu me rappeler?"),
              (TYPE_CHARGE_ME, "Peux-tu recharger mon compte?"),
              (TYPE_RING, "Bip."),
              (TYPE_SMS_UNKNOWN, "SMS à déterminer."),

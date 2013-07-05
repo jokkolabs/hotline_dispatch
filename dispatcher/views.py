@@ -353,7 +353,7 @@ def data_entry(request):
                                            widget=forms.CheckboxSelectMultiple)
         age = forms.IntegerField(label="Age", required=False)
         sex = forms.ChoiceField(label="Sexe", choices=HotlineResponse.SEXES.items(),
-                                required=False)
+                                required=False, initial=HotlineResponse.SEX_UNKNOWN)
         region = forms.ChoiceField(label="Région",
                                    choices=[(None, " --- ")] + [(e.slug, e.name)
                                    for e in Entity.objects.filter(type=Entity.TYPE_REGION)])
@@ -363,13 +363,14 @@ def data_entry(request):
 
         def clean_village(self):
             ''' Returns a Village Entity from the multiple selects '''
-            if not self.cleaned_data['village']:
-                return None
+            location = None
+            levels = ['region', 'cercle', 'commune', 'village']
+            while len(levels) and (location is None or location == '00000000'):
+                location = self.cleaned_data.get(levels.pop())
             try:
-                return Entity.objects.get(type=Entity.TYPE_VILLAGE,
-                                          slug=self.cleaned_data['village'])
+                return Entity.objects.get(slug=location)
             except Entity.DoesNotExist:
-                raise forms.ValidationError("Village incorrect.")
+                raise forms.ValidationError("Localité incorrecte.")
 
         def clean_request_id(self):
             ''' Return a HotlineEvent from the id '''
@@ -480,6 +481,7 @@ def status(request):
                'nbsms': count_unknown_sms()}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
+
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
         per_event_type.update({event_type[0]:
@@ -488,12 +490,20 @@ def status(request):
     untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()
     not_archived = HotlineEvent.objects.filter(archived=False).count()
+    sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count()
+    sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
+    sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
     context.update({'last_event': last_event,
                     'total_events': total_events,
                     'per_event_type': per_event_type,
                     'untreated': untreated,
                     'untreated_count': untreated_count,
+                    'sex_unknown': sex_unknown,
+                    'sex_male': sex_male,
+                    'sex_female': sex_female,
+                    'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
+                                  for operator in operators()],
                     'not_archived': not_archived})
 
     return render(request, "status.html", context)
