@@ -87,14 +87,12 @@ $('.entrybutton').click(function () {
 
     // datepicker
     var existing_date = $('#id_response_date_0');
-    console.log(existing_date);
     var new_date_picker = $('<div id="datepicker" class="input-append"><input id="id_response_date_0" name="response_date_0" data-format="dd/MM/yyyy" type="text" value="'+ existing_date.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
     existing_date.replaceWith(new_date_picker);
     mod.find('#datepicker').datetimepicker({pickTime: false});
 
     // timepicker
     var existing_time = $('#id_response_date_1');
-    console.log(existing_time);
     var new_time_picker = $('<div id="timepicker" class="input-append"><input id="id_response_date_1" name="response_date_1" data-format="hh:mm:ss" type="text" value="'+ existing_time.val() +'"></input><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>');
     existing_time.replaceWith(new_time_picker);
     mod.find('#timepicker').datetimepicker({pickDate: false});
