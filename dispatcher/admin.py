@@ -61,7 +61,7 @@ class CustomHotlineEvent(admin.ModelAdmin):
 class CustomHotlineResponse(admin.ModelAdmin):
     list_display = ("created_on", "response_date", "age", "sex",
                     "duration", "location",)
-    list_filter = ("created_on", "sex", "location")
+    list_filter = ("created_on", "sex",)
 
 
 class CustomEntity(admin.ModelAdmin):
