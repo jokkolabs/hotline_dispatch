@@ -9,6 +9,19 @@
 	list-style-type: none;
 }
 
+table tr .total{
+font-weight: bold;
+
+}
+
+table tr .ident{
+     text-indent: 3em;
+}
+
 /*.controls ul li label:first-line {
 	font-weight: bold;
 }*/
+
+body.status .table:first-of-type td {
+    text-align: center;
+};
