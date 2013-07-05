@@ -67,7 +67,6 @@ class CustomHotlineResponse(admin.ModelAdmin):
 class CustomEntity(admin.ModelAdmin):
     list_display = ("slug", "name", "type", "latitude",
                     "longitude", "parent",)
-    list_filter = ("parent",)
 
 
 class CustomTopics(admin.ModelAdmin):
