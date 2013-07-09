@@ -40,7 +40,7 @@ Ring_anwers = []
 def event_type_from_message(message):
     message = message.strip()
     call_me_tpl_orange = "Peux-tu me rappeler au numero suivant"
-    charge_me_tpl_orange = "Peux tu recharger mon compte au numero suivant"
+    charge_me_tpl_orange = "Peux-tu recharger mon compte au numero suivant"
     call_me_tpl_malitel = "Rappellez moi s'il vous plait au numero suivant"
     am_tpl_orange = "Messagerie Vocale:"
 
