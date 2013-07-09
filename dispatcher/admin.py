@@ -54,7 +54,7 @@ class CustomUserAdmin(UserAdmin):
 class CustomHotlineEvent(admin.ModelAdmin):
     list_display = ("identity", "event_type", "received_on", "created_on",
                     "hotline_number", "sms_message", "processed", "operator",
-                    "volunteer", "archived")
+                    "volunteer", "answer")
     list_filter = ("created_on", "event_type", "operator", "volunteer")
 
 

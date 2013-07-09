@@ -10,6 +10,7 @@ import smtplib
 import datetime
 
 import requests
+import unicodecsv
 from django.conf import settings
 from django.core import mail
 from django.template import loader, Context
@@ -60,7 +61,7 @@ def count_unknown_sms():
 
 def count_unarchived_sms():
     from dispatcher.models import HotlineEvent
-    return HotlineEvent.objects.filter(processed=True, archived=False).count()
+    return HotlineEvent.objects.filter(processed=True, answer__isnull=True).count()
 
 
 def count_unprocessed():
@@ -335,3 +336,51 @@ def datetime_range(start, stop=None, days=1):
         start += datetime.timedelta(days)
 
     yield stop
+
+
+def export_reponses(csv_file):
+    from dispatcher.models import HotlineResponse, Topics
+
+    name_col = lambda topic: "topic_{}".format(topic.slug)
+
+    topics = Topics.objects.order_by('slug')
+    headers = ["received_on",
+               "operator",
+               "volunteer",
+               "event_type",
+               "response_date",
+               "age",
+               "sex",
+               "duration",
+               "location",
+               "location_slug",
+               "location_type",
+               "topics_list",
+               "topics_count"] + [name_col(topic) for topic in topics]
+
+    output_file = open(csv_file, 'w')
+    csv_writer = unicodecsv.DictWriter(output_file, headers, encoding='utf-8')
+    csv_writer.writeheader()
+
+    for response in HotlineResponse.objects.all():
+
+        data = {"received_on": response.request.received_on.isoformat(),
+                "operator": response.request.operator,
+                "volunteer": response.request.volunteer.username,
+                "event_type": response.request.event_type,
+                "response_date": response.response_date.isoformat(),
+                "age": response.age,
+                "sex": response.sex,
+                "duration": int(response.duration),
+                "location": response.location,
+                "location_slug": getattr(response.location, 'slug', None),
+                "location_type": getattr(response.location, 'type', None),
+                "topics_list": ", ".join([topic.get('slug', '')
+                                          for topic in response.topics.values()]),
+                "topics_count": response.topics.count()}
+        for topic in topics:
+            data.update({name_col(topic): "Y" if topic in response.topics.all() else None})
+
+        csv_writer.writerow(data)
+
+    output_file.close()
