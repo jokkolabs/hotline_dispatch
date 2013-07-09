@@ -498,7 +498,7 @@ def status(request):
     untreated = HotlineEvent.objects.filter(processed=False,
                                             event_type__in=HotlineEvent.HOTLINE_TYPES)
     untreated_count = untreated.count()
-    not_archived = HotlineEvent.objects.filter(archived=False,
+    not_archived = HotlineEvent.objects.filter(processed=True, archived=False,
                                                event_type__in=HotlineEvent.HOTLINE_TYPES).count()
     sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count()
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
