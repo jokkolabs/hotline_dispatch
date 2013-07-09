@@ -48,7 +48,10 @@ class HotlineEvent(models.Model):
     processed = models.BooleanField(default=False)
     operator = models.CharField(max_length=50, choices=OPERATORS)
     volunteer = models.ForeignKey('HotlineVolunteer', null=True, blank=True)
-    archived = models.BooleanField(default=False)
+
+    @property
+    def archived(self):
+        return self.answer.exists()
 
     def __unicode__(self):
         return "%(type)s/%(number)s" % {'type': self.event_type,
@@ -80,7 +83,7 @@ class HotlineResponse(models.Model):
         SEX_FEMALE: "Femme"
     }
 
-    request = models.ForeignKey(HotlineEvent, unique=True)
+    request = models.ForeignKey(HotlineEvent, unique=True, related_name='answer')
     created_on = models.DateTimeField(auto_now_add=True)
     response_date = models.DateTimeField()
     age = models.PositiveIntegerField(null=True, blank=True)

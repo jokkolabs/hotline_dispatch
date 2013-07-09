@@ -391,7 +391,7 @@ def data_entry(request):
                'nbarchive': count_unarchived_sms(),
                'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
                                                                 processed=True,
-                                                                archived=False).count())
+                                                                answer__isnull=True).count())
                               for vol in HotlineVolunteer.objects.filter(is_active=True)]}
 
     volunteer = None
@@ -405,7 +405,7 @@ def data_entry(request):
     if volunteer:
         events = HotlineEvent.objects.filter(volunteer=volunteer,
                                              processed=True,
-                                             archived=False)
+                                             answer__isnull=True)
 
     # If POST, we received data for a HotlineResponse
     if request.method == 'POST':
@@ -413,7 +413,6 @@ def data_entry(request):
         if form.is_valid():
 
             event_request = form.cleaned_data.get('request_id')
-            event_request.archived = True
 
             event_response = HotlineResponse.objects \
                 .create(request=event_request,
@@ -498,8 +497,7 @@ def status(request):
     untreated = HotlineEvent.objects.filter(processed=False,
                                             event_type__in=HotlineEvent.HOTLINE_TYPES)
     untreated_count = untreated.count()
-    not_archived = HotlineEvent.objects.filter(processed=True, archived=False,
-                                               event_type__in=HotlineEvent.HOTLINE_TYPES).count()
+    not_archived = count_unarchived_sms()
     sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count()
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
@@ -545,3 +543,4 @@ def graph_data(request):
                   'responses': responses}
 
     return HttpResponse(json.dumps(data_event), mimetype='application/json')
+
