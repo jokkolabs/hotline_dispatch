@@ -180,6 +180,8 @@ HOTLINE_NUMBERS = {
 HOTLINE_VOLUNTEERS_NUMBERS = {
 }
 
+LOGIN_URL = '/login/'
+
 try:
     from settings_local import *
 except ImportError:
