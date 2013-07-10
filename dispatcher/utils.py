@@ -130,15 +130,15 @@ def join_phone_number(prefix, number, force_intl=True):
     return '+%s%s' % (prefix, number)
 
 
-def operator_from_mali_number(number, default=MALITEL):
+def operator_from_mali_number(number, default=ORANGE):
     ''' ORANGE or MALITEL based on the number prefix '''
 
     indicator, clean_number = clean_phone_number(number)
     if indicator is not None and indicator != str(COUNTRY_PREFIX):
         return FOREIGN
 
-    malitel_prefixes = [20, 22, 65, 66, 67, 68, 69]
-    orange_prefixes = [5, 6, 7, 9, 30, 31, 32, 33, 34, 50, 4, 442, 443, 449]
+    malitel_prefixes = [2, 6]
+    orange_prefixes = [7, 9, 4, 8]
 
     for prefix in malitel_prefixes:
         if clean_number.startswith(str(prefix)):
