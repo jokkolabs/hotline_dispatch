@@ -8,6 +8,8 @@ import re
 import json
 import smtplib
 import datetime
+import zipfile
+
 
 import requests
 import unicodecsv
@@ -384,3 +386,30 @@ def export_csv_reponses(csv_file):
         csv_writer.writerow(data)
 
     output_file.close()
+
+
+def zip_csv_reponses(csv_file=None, template=None):
+
+    date_export = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M')
+
+    if not csv_file:
+        csv_file = "{}{}.csv".format('csv_responses_', date_export)
+
+    # Export csv file
+    export_csv_reponses(csv_file)
+
+    context = {'created_on': date_export}
+
+    msg = loader.get_template('README.txt').render(Context(context))
+
+    zf = zipfile.ZipFile('zip_file_responses{}.zip'.format(date_export), mode='w')
+    try:
+
+        file_write = open('README.txt', "w")
+        zf.write(csv_file)
+        file_write.write(msg)
+        file_write.close()
+
+        zf.write(file_write.name)
+    finally:
+        zf.close()
