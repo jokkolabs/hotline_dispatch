@@ -338,7 +338,7 @@ def datetime_range(start, stop=None, days=1):
     yield stop
 
 
-def export_reponses(csv_file):
+def export_csv_reponses(csv_file):
     from dispatcher.models import HotlineResponse, Topics
 
     name_col = lambda topic: "topic_{}".format(topic.slug)
