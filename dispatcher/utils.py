@@ -4,10 +4,12 @@
 
 from __future__ import (unicode_literals, absolute_import,
                         division, print_function)
+import os
 import re
 import json
 import smtplib
 import datetime
+import zipfile
 
 import requests
 import unicodecsv
@@ -338,9 +340,10 @@ def datetime_range(start, stop=None, days=1):
 
 
 def export_reponses(csv_file):
+    ''' export the csv file '''
     from dispatcher.models import HotlineResponse, Topics
 
-    name_col = lambda topic: "topic_{}".format(topic.slug)
+    name_col = lambda topic: "topic_{slug}".format(slug=topic.slug)
 
     topics = Topics.objects.order_by('slug')
     headers = ["received_on",
@@ -383,3 +386,33 @@ def export_reponses(csv_file):
         csv_writer.writerow(data)
 
     output_file.close()
+
+
+def zip_csv_reponses(csv_file=None, template=None):
+    ''' compress and export the csv file '''
+
+    date_export = datetime.datetime.now()
+
+    if not csv_file:
+        csv_file = "{name}{date}.csv".format(name='hotline_data',
+                                             date=date_export.strftime('%Y-%m-%d-%H:%M'))
+
+    # Export csv file
+    export_reponses(csv_file)
+
+    context = {'created_on': date_export}
+
+    msg = loader.get_template('README.txt').render(Context(context))
+
+    zf = zipfile.ZipFile('csv_file{date}.zip'.format(date=date_export
+                                                     .strftime('%Y-%m-%d-%H:%M')), mode='w')
+
+    readme_write = open('README.txt', "w")
+    readme_write.write(msg)
+    readme_write.close()
+
+    zf.write(csv_file)
+    zf.write(readme_write.name)
+
+    os.remove(csv_file)
+    os.remove(readme_write.name)
