@@ -545,4 +545,3 @@ def graph_data(request):
                   'responses': responses}
 
     return HttpResponse(json.dumps(data_event), mimetype='application/json')
-
