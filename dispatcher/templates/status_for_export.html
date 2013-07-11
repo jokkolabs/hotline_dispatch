@@ -1,0 +1,21 @@
+{% extends "base_export.html" %}
+{% load dispatcher %}
+
+{% block content %}
+
+{% include "status_infos_table.html" %}
+
+{% include "status_region_table.html" %}
+
+{% include "status_events_graph.html" %}
+
+<div class="sponsors">
+    <h2>Sponsorisé par:</h2>
+    <a href="http://jokkolabs.ml"><img src="static/img/jokkolabs.png" /></a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    {% include "status_events_graph.js" with graph_data_url='graph_data.json' %}
+{% endblock %}

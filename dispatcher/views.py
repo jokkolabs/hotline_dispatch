@@ -478,12 +478,9 @@ def blacklist(request):
     return render(request, "blacklist.html", context)
 
 
-@login_required()
-def status(request):
-    context = {'page': 'status',
-               'nbarchive': count_unarchived_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'nbsms': count_unknown_sms()}
+def return_context():
+    ''' return the context for status '''
+    context = {}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
     total_events = HotlineEvent.objects.count()
 
@@ -515,12 +512,23 @@ def status(request):
                                                   .count()) for region in list(Entity.objects.filter(type='region'))] +
                                                  [("Inconnue", HotlineResponse.objects.filter(location=None).count())],
                     'not_archived': not_archived})
+    return context
+
+
+@login_required()
+def status(request):
+    ''' display the status '''
+    context = {'page': 'status',
+               'nbarchive': count_unarchived_sms(),
+               'nbunprocessed': count_unprocessed(),
+               'nbsms': count_unknown_sms()}
+
+    context.update(return_context())
 
     return render(request, "status.html", context)
 
 
-def graph_data(request):
-
+def return_json():
     date_start_end = lambda d, s=True: \
         datetime.datetime(int(d.year), int(d.month), int(d.day),
                           0 if s else 23, 0 if s else 59, 0 if s else 59)
@@ -544,4 +552,10 @@ def graph_data(request):
     data_event = {'requests': requests,
                   'responses': responses}
 
-    return HttpResponse(json.dumps(data_event), mimetype='application/json')
+    return data_event
+
+
+def graph_data(request):
+    ''' Return graph data in json '''
+
+    return HttpResponse(json.dumps(return_json()), mimetype='application/json')
