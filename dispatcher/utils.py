@@ -341,9 +341,10 @@ def datetime_range(start, stop=None, days=1):
 
 
 def export_reponses(csv_file):
+    ''' export the csv file '''
     from dispatcher.models import HotlineResponse, Topics
 
-    name_col = lambda topic: "topic_{}".format(topic.slug)
+    name_col = lambda topic: "topic_{slug}".format(slug=topic.slug)
 
     topics = Topics.objects.order_by('slug')
     headers = ["received_on",
@@ -389,6 +390,7 @@ def export_reponses(csv_file):
 
 
 def zip_csv_reponses(csv_file=None, template=None):
+    ''' compress and export the csv file '''
 
     date_export = datetime.datetime.now()
 
