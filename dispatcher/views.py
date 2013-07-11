@@ -511,6 +511,9 @@ def status(request):
                     'sex_female': sex_female,
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
                                   for operator in operators()],
+                    'regions_located_responses': [(region, HotlineResponse.objects.filter(location__in=region.get_descendants(True))
+                                                  .count()) for region in list(Entity.objects.filter(type='region'))] +
+                                                 [("Inconnue", HotlineResponse.objects.filter(location=None).count())],
                     'not_archived': not_archived})
 
     return render(request, "status.html", context)
