@@ -52,13 +52,13 @@ class CustomUserAdmin(UserAdmin):
 
 
 class CustomHotlineEvent(admin.ModelAdmin):
-    list_display = ("created_on", "operator", "identity", "sms_message", "event_type", "received_on",
-                    "processed", "volunteer", "answer")
+    list_display = ("received_on", "operator", "identity", "event_type",
+                    "sms_message", "created_on",  "processed", "volunteer", "answer")
     list_filter = ("created_on", "event_type", "operator", "volunteer")
 
 
 class CustomHotlineResponse(admin.ModelAdmin):
-    list_display = ("created_on", "response_date", "age", "sex",
+    list_display = ("response_date", "created_on", "age", "sex",
                     "duration", "location",)
     list_filter = ("created_on", "sex",)
 
