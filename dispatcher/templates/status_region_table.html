@@ -1,0 +1,19 @@
+{% load dispatcher %}
+
+{% if regions_located_responses %}
+<h2>Nombre des rappels par région</h2>
+    <table class="table table-condensed table-hover table-bordered table-striped">
+    <thead>
+    <tr>
+    <th class="span2">Région</th>
+    <th class="span2">Nombre</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for region, count in regions_located_responses %}
+        <tr><td>{{ region }}</td>
+            <td><strong>{{ count }}</strong></td>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endif %}

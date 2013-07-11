@@ -3,65 +3,9 @@
 
 {% block content %}
 
-<table class="table table-condensed table-hover table-bordered table-striped">
-    <tbody>
-        <tr>
-            <th class="span8">Dernier appel</th>
-            <td class="span4">{{ last_event.received_on }}</td>
-        </tr>
-        <tr>
-            <th>Nombre d'appels non traités</th>
-            <td>{{ untreated_count }}</td>
-        </tr>
-        <tr>
-            <th>Nombre de rappels à saisir</th>
-            <td>{{ not_archived }}</td>
-        </tr>
-        <tr>
-            <th>Nombre total d'appels</th>
-            <td class="total">{{ total_events }}</td>
-        </tr>
-        {{count_operators}}
-        {% for operator, operatorcount in operators %}
-        <tr>
-            <th class="ident">Total {{ operator.capitalize }}</th>
-            <td>{{ operatorcount }}</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <th class="ident">{{ per_event_type.CALL_ME.0 }}</th>
-            <td>{{ per_event_type.CALL_ME.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.CHARGE_ME.0 }}</th>
-            <td>{{ per_event_type.CHARGE_ME.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.RING.0 }}</th>
-            <td>{{ per_event_type.RING.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.SMS_UNKNOWN.0 }}</th>
-            <td>{{ per_event_type.SMS_UNKNOWN.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.SMS_HOTLINE.0 }}</th>
-            <td>{{ per_event_type.SMS_HOTLINE.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.SMS_USHAHIDI.0 }}</th>
-            <td>{{ per_event_type.SMS_USHAHIDI.1 }}</td>
-        </tr>
-        <tr>
-            <th class="ident">{{ per_event_type.SMS_SPAM.0 }}</th>
-            <td>{{ per_event_type.SMS_SPAM.1 }}</td>
-        </tr>
-        <tr>
-            <th>Total par sexes (Homme/Femme/Inconnu)</th>
-            <td>{{ sex_male }} H, {{sex_female}} F, {{sex_unknown}} Inconnus</td>
-        </tr>
-    </tbody>
-    </table>
+{% include "status_infos_table.html" %}
+
+{% include "status_region_table.html" %}
 
 {% if untreated %}
 <h2>Liste des événements non traités</h2>
@@ -83,66 +27,11 @@
     </table>
 {% endif %}
 
-<h2>Graphe des événements</h2>
-<div class="flot-container">
-    <div id="placeholder" class="flot-placeholder"></div>
-</div>
-
+{% include "status_events_graph.html" %}
 
 {% endblock %}
 
 {% block extra_js %}
-    $.getJSON('{% url 'graph_data' %}', function(data) {
-
-        var requests = data.requests;
-        var responses = data.responses;
-
-        // helper for returning the weekends in a period
-
-        function weekendAreas(axes) {
-
-            var markings = [],
-                requests = new Date(axes.xaxis.min);
-
-            // go to the first Saturday
-
-            requests.setUTCDate(requests.getUTCDate() - ((requests.getUTCDay() + 1) % 7))
-            requests.setUTCSeconds(0);
-            requests.setUTCMinutes(0);
-            requests.setUTCHours(0);
-
-            var i = requests.getTime();
-
-            // when we don't set yaxis, the rectangle automatically
-            // extends to infinity upwards and downwards
-
-            do {
-                markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
-                i += 7 * 24 * 60 * 60 * 1000;
-            } while (i < axes.xaxis.max);
-
-            return markings;
-        }
-
-        var options = {
-            xaxis: {
-                mode: "time",
-                tickLength: 1
-            },
-            grid: {
-                markings: weekendAreas
-            },
-            series: {
-                lines: { show: true },
-                points: { show: true }
-            },
-            legend: {show: true}
-        };
-
-        var plot = $.plot("#placeholder", [{label: "Appels à la hotline", data:requests},
-                                           {label: "Rappels par la hotline", data:responses}], options);
-
-
-    });
-
+    {% url 'graph_data' as graph_url %}
+    {% include "status_events_graph.js" with graph_data_url=graph_url %}
 {% endblock %}
