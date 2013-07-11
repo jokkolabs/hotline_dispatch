@@ -33,7 +33,6 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               count_unprocessed,
                               EMPTY_ENTITY)
 
-LOGIN_URL = '/login/'
 Ring_anwers = []
 
 
@@ -192,7 +191,7 @@ def ringsync(request, call_number, call_timestamp):
     return HttpResponse("NOT", status=301)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def dashboard(request):
 
     context = {'page': 'dashboard',
@@ -236,7 +235,7 @@ def dashboard(request):
     return render(request, "dashboard.html", context)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
 
     context = {'page': 'sms', 'nbsms': count_unknown_sms(),
@@ -266,7 +265,7 @@ def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
     return render(request, "sms_check.html", context)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def sms_change_type(request, event_id, new_type,
                     return_to=HotlineEvent.TYPE_SMS_UNKNOWN):
 
@@ -283,7 +282,7 @@ def sms_change_type(request, event_id, new_type,
     return redirect('sms_filter', return_to)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def change_password(request):
     context = {'page': 'password', 'nbsms': count_unknown_sms(),
                'nbunprocessed': count_unprocessed(),
@@ -330,7 +329,7 @@ def change_password(request):
     return render(request, "change_password.html", context)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def data_entry(request):
     ''' Enter Data for calls made by the volunteers
 
@@ -455,7 +454,7 @@ def entities_api(request, parent_slug=None):
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def blacklist(request):
     context = {'page': 'blackList',
                'nbarchive': count_unarchived_sms(),
@@ -479,7 +478,7 @@ def blacklist(request):
     return render(request, "blacklist.html", context)
 
 
-@login_required(login_url=LOGIN_URL)
+@login_required()
 def status(request):
     context = {'page': 'status',
                'nbarchive': count_unarchived_sms(),
