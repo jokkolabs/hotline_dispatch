@@ -7,7 +7,7 @@ from __future__ import (unicode_literals, absolute_import,
 
 from django.core.management.base import BaseCommand
 
-from dispatcher.utils import export_csv_reponses
+from dispatcher.utils import export_reponses
 
 
 class Command(BaseCommand):
@@ -15,6 +15,6 @@ class Command(BaseCommand):
 
     def handle(self, csv_file, *args, **kwargs):
 
-        export_csv_reponses(csv_file)
+        export_reponses(csv_file)
 
         print("Fin.")
