@@ -339,7 +339,7 @@ def datetime_range(start, stop=None, days=1):
     yield stop
 
 
-def export_reponses(csv_file):
+def export_reponses(filename):
     ''' export the csv file '''
     from dispatcher.models import HotlineResponse, Topics
 
@@ -360,8 +360,8 @@ def export_reponses(csv_file):
                "topics_list",
                "topics_count"] + [name_col(topic) for topic in topics]
 
-    output_file = open(csv_file, 'w')
-    csv_writer = unicodecsv.DictWriter(output_file, headers, encoding='utf-8')
+    csv_file = open(filename, 'w')
+    csv_writer = unicodecsv.DictWriter(csv_file, headers, encoding='utf-8')
     csv_writer.writeheader()
 
     for response in HotlineResponse.objects.all():
@@ -385,37 +385,42 @@ def export_reponses(csv_file):
 
         csv_writer.writerow(data)
 
-    output_file.close()
+    csv_file.close()
+
+    return filename
 
 
-def zip_csv_reponses(csv_file=None, template=None):
+def zip_csv_reponses(filename=None,):
     ''' compress and export the csv file '''
+
+    from dispatcher.models import Topics
 
     date_export = datetime.datetime.now()
 
-    if not csv_file:
-        csv_file = "{name}{date}.csv".format(name='hotline_data',
-                                             date=date_export.strftime('%Y-%m-%d-%H:%M'))
+    csv_filename = "{}.csv".format(filename.rsplit('.', 1)[0])
+    zip_filename = "{}.zip".format(filename.rsplit('.', 1)[0])
 
     # Export csv file
-    export_reponses(csv_file)
+    export_reponses(csv_filename)
 
-    context = {'created_on': date_export}
+    context = {'created_on': date_export,
+               'topics': Topics.objects.all().order_by('slug')}
 
-    msg = loader.get_template('README.txt').render(Context(context))
+    readme_content = loader.get_template('README.txt').render(Context(context))
 
-    zf = zipfile.ZipFile('csv_file{date}.zip'.format(date=date_export
-                                                     .strftime('%Y-%m-%d-%H:%M')), mode='w')
+    zf = zipfile.ZipFile(zip_filename, mode='w')
 
-    readme_write = open('README.txt', "w")
-    readme_write.write(msg)
-    readme_write.close()
+    readme_file = open('README.txt', "w")
+    readme_file.write(readme_content.encode('utf-8'))
+    readme_file.close()
 
-    zf.write(csv_file)
-    zf.write(readme_write.name)
+    zf.write(csv_filename)
+    zf.write(readme_file.name)
 
-    os.remove(csv_file)
-    os.remove(readme_write.name)
+    os.remove(csv_filename)
+    os.remove(readme_file.name)
+
+    return zip_filename
 
 
 def get_default_context(page=''):
