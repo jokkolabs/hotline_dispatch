@@ -28,9 +28,7 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               join_phone_number,
                               number_is_blacklisted,
                               datetime_range,
-                              count_unknown_sms,
                               count_unarchived_sms,
-                              count_unprocessed,
                               get_default_context,
                               EMPTY_ENTITY)
 
@@ -472,7 +470,11 @@ def blacklist(request):
 def get_status_context():
     ''' return the context for status '''
     context = {}
-    last_event = HotlineEvent.objects.order_by('-received_on')[0]
+    try:
+        last_event = HotlineEvent.objects.latest('received_on')
+    except HotlineEvent.DoesNotExist:
+        last_event = []
+
     total_events = HotlineEvent.objects.count()
 
     per_event_type = {}
