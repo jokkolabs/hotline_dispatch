@@ -138,8 +138,8 @@ def operator_from_mali_number(number, default=ORANGE):
     if indicator is not None and indicator != str(COUNTRY_PREFIX):
         return FOREIGN
 
-    malitel_prefixes = [2, 6]
-    orange_prefixes = [7, 9, 4, 8]
+    malitel_prefixes = [2, 6, 98, 99]
+    orange_prefixes = [7, 9, 4, 8, 90, 91]
 
     for prefix in malitel_prefixes:
         if clean_number.startswith(str(prefix)):
