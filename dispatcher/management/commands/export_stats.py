@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        html_filename = "hotline_stats.html"
+        html_filename = "index.html"
         json_hotline_data = "hotline_data.json"
         json_graph_data = "graph_data.json"
         context = get_status_context()
