@@ -381,7 +381,7 @@ def export_reponses(filename):
                                           for topic in response.topics.values()]),
                 "topics_count": response.topics.count()}
         for topic in topics:
-            data.update({name_col(topic): "Y" if topic in response.topics.all() else None})
+            data.update({name_col(topic): "true" if topic in response.topics.all() else None})
 
         csv_writer.writerow(data)
 
@@ -406,11 +406,11 @@ def zip_csv_reponses(filename=None,):
     context = {'created_on': date_export,
                'topics': Topics.objects.all().order_by('slug')}
 
-    readme_content = loader.get_template('README.txt').render(Context(context))
+    readme_content = loader.get_template('datapackage.json').render(Context(context))
 
     zf = zipfile.ZipFile(zip_filename, mode='w')
 
-    readme_file = open('README.txt', "w")
+    readme_file = open('datapackage.json', "w")
     readme_file.write(readme_content.encode('utf-8'))
     readme_file.close()
 
