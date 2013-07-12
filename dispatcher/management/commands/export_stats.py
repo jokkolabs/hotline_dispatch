@@ -11,7 +11,7 @@ import zipfile
 from django.core.management.base import BaseCommand
 from django.template import loader, Context
 
-from dispatcher.views import return_context, return_json
+from dispatcher.views import get_status_context, get_graph_context
 
 
 class Command(BaseCommand):
@@ -22,7 +22,7 @@ class Command(BaseCommand):
         html_filename = "hotline_stats.html"
         json_hotline_data = "hotline_data.json"
         json_graph_data = "graph_data.json"
-        context = return_context()
+        context = get_status_context()
 
         # generate HTML page
         html_content = loader.get_template("status_for_export.html").render(Context(context))
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         hotline_data_fp.close()
 
         # generate JSON file
-        graph_data = return_json()
+        graph_data = get_graph_context()
         graph_data_fp = open(json_graph_data, 'w')
         json.dump(graph_data, graph_data_fp)
         graph_data_fp.close()

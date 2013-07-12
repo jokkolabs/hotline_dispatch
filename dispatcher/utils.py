@@ -416,3 +416,10 @@ def zip_csv_reponses(csv_file=None, template=None):
 
     os.remove(csv_file)
     os.remove(readme_write.name)
+
+
+def get_default_context(page=''):
+    return {'page': page,
+            'nbarchive': count_unarchived_sms(),
+            'nbunprocessed': count_unprocessed(),
+            'nbsms': count_unknown_sms()}

@@ -31,6 +31,7 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               count_unknown_sms,
                               count_unarchived_sms,
                               count_unprocessed,
+                              get_default_context,
                               EMPTY_ENTITY)
 
 Ring_anwers = []
@@ -194,15 +195,13 @@ def ringsync(request, call_number, call_timestamp):
 @login_required()
 def dashboard(request):
 
-    context = {'page': 'dashboard',
-               'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'operators': [(operator,
-                              HotlineEvent.objects.filter(operator=operator,
-                                                          processed=False,
-                                                          event_type__in=HotlineEvent.HOTLINE_TYPES).count())
-                             for operator in operators()]}
+    context = get_default_context(page='dashboard')
+
+    context.update({'operators':
+                    [(operator, HotlineEvent.objects.filter(operator=operator,
+                                                            processed=False,
+                                                            event_type__in=HotlineEvent.HOTLINE_TYPES).count())
+                     for operator in operators()]})
 
     if request.method == 'POST':
 
@@ -238,9 +237,7 @@ def dashboard(request):
 @login_required()
 def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
 
-    context = {'page': 'sms', 'nbsms': count_unknown_sms(),
-               'nbarchive': count_unarchived_sms(),
-               'nbunprocessed': count_unprocessed()}
+    context = get_default_context(page='sms')
 
     if not event_filter in HotlineEvent.SMS_TYPES:
         event_filter = HotlineEvent.TYPE_SMS_UNKNOWN
@@ -284,9 +281,7 @@ def sms_change_type(request, event_id, new_type,
 
 @login_required()
 def change_password(request):
-    context = {'page': 'password', 'nbsms': count_unknown_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'nbarchive': count_unarchived_sms()}
+    context = get_default_context(page='password')
 
     class ChangePasswordForm(forms.Form):
 
@@ -385,13 +380,11 @@ def data_entry(request):
             except HotlineEvent.DoesNotExist:
                 raise forms.ValidationError("Évennement incorrect")
 
-    context = {'page': 'data_entry', 'nbsms': count_unknown_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'nbarchive': count_unarchived_sms(),
-               'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
-                                                                processed=True,
-                                                                answer__isnull=True).count())
-                              for vol in HotlineVolunteer.objects.filter(is_active=True)]}
+    context = get_default_context(page='data_entry')
+    context.update({'volunteers': [(vol, HotlineEvent.objects.filter(volunteer=vol,
+                                                                     processed=True,
+                                                                     answer__isnull=True).count())
+                                   for vol in HotlineVolunteer.objects.filter(is_active=True)]})
 
     volunteer = None
     events = []
@@ -444,6 +437,7 @@ def data_entry(request):
     return render(request, "data_entry.html", context)
 
 
+@login_required()
 def entities_api(request, parent_slug=None):
     ''' JSON list of Entity whose parent has the slug provided '''
 
@@ -456,10 +450,7 @@ def entities_api(request, parent_slug=None):
 
 @login_required()
 def blacklist(request):
-    context = {'page': 'blackList',
-               'nbarchive': count_unarchived_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'nbsms': count_unknown_sms()}
+    context = get_default_context(page='blacklist')
 
     if request.method == 'POST':
         identity = request.POST.get('identity').strip()
@@ -478,7 +469,7 @@ def blacklist(request):
     return render(request, "blacklist.html", context)
 
 
-def return_context():
+def get_status_context():
     ''' return the context for status '''
     context = {}
     last_event = HotlineEvent.objects.order_by('-received_on')[0]
@@ -517,18 +508,22 @@ def return_context():
 
 @login_required()
 def status(request):
-    ''' display the status '''
-    context = {'page': 'status',
-               'nbarchive': count_unarchived_sms(),
-               'nbunprocessed': count_unprocessed(),
-               'nbsms': count_unknown_sms()}
+    context = get_default_context(page='status')
 
-    context.update(return_context())
+    context.update(get_status_context())
 
     return render(request, "status.html", context)
 
 
-def return_json():
+def exported_status(request):
+    context = get_default_context(page='status')
+
+    context.update(get_status_context())
+
+    return render(request, "status_for_export.html", context)
+
+
+def get_graph_context():
     date_start_end = lambda d, s=True: \
         datetime.datetime(int(d.year), int(d.month), int(d.day),
                           0 if s else 23, 0 if s else 59, 0 if s else 59)
@@ -555,7 +550,8 @@ def return_json():
     return data_event
 
 
+@login_required()
 def graph_data(request):
     ''' Return graph data in json '''
 
-    return HttpResponse(json.dumps(return_json()), mimetype='application/json')
+    return HttpResponse(json.dumps(get_graph_context()), mimetype='application/json')

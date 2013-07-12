@@ -3,15 +3,53 @@
 
 {% block content %}
 
+<div class="alert alert-info">
+<p>Cette page présente les données de la <strong>Hotline SOS Démocratie</strong> à un instant <em>t</em>.</p>
+<p>Elle devrait être mise à jour régulièrement (environ toutes les 5mn) pendant toute la durée du projet (juillet-août-septembre 2013).</p>
+<p>Les données brutes complète sont disponible sur <a href="http://opendata.ml">Open Data Mali</a>.</p>
+<p>Pour en savoir plus, voir <a href="#about">ci-dessous</a>.</p>
+</div>
+
 {% include "status_infos_table.html" %}
 
 {% include "status_region_table.html" %}
 
 {% include "status_events_graph.html" %}
 
+<div class="about">
+<a name="about"></a>
+<h2>À Propos</h2>
+<p>La Hotline SOS Démocratie est une initiative de <strong>Jokkolabs</strong> pour soutenir les actions de sensibilisation de l'association <strong>SOS Démocratie</strong>, en vue de l'élection présidentielle de Juillet 2013.</p>
+<p>Concrètement, deux numéros (un par opérateur) sont mis à disposition du public qui peut les “<em>biper</em>” à tout moment. Instantanément, ils reçoivent un message SMS les informant qu'un volontaire de SOS Démocratie va les rappeler.</p>
+<p>Ensuite, par ordre d'arrivée, les volontaires rappellent tous les numéros et répondent à toutes les questions sur <em>la démocratie</em>, <em>le vote</em>, etc.</p>
+
+<h3>Jokkolabs</h3>
+<ul>
+	<li>Conception, développement, déploiement de la Hotline</li>
+	<li>Équipements (modems, serveur)</li>
+	<li>Monitoring, maintenance</li>
+	<li>Hébergement des volontaires (salle d'appels)</li>
+	<li>Saisie et publication des données (Open Data Mali).</li>
+</ul>
+<h3>SOS Démocratie</h3>
+<ul>
+	<li>Développement du guide de réponse des volontaires.</li>
+	<li>Mise à disposition des volontaires (tours de garde).</li>
+	<li>Promotion de la Hotline lors de toutes les activités.</li>
+	<li>Supervision des volontaires.</li>
+</ul>
+<h3>USAID</h3>
+<ul>
+	<li>Financement des coûts téléphonique.</li>
+	<li>Financement des coûts promotionnels (presse, radio, TV).</li>
+	<li>Financement du stipend volontaire (frais de transport jusqu'à Jokkolabs).</li>
+</ul>
+</div>
 <div class="sponsors">
-    <h2>Sponsorisé par:</h2>
     <a href="http://jokkolabs.ml"><img src="static/img/jokkolabs.png" /></a>
+    <a href="http://opendata.ml"><img src="static/img/opendata.png" /></a>
+    <a href="http://usaid.gov"><img src="static/img/usaid.png" /></a>
+    <a href="http://sosdemocratiemali.org"><img src="static/img/sosdemo.jpg" /></a>
 </div>
 
 {% endblock %}
