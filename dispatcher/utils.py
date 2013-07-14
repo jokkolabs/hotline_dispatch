@@ -339,7 +339,7 @@ def datetime_range(start, stop=None, days=1):
     yield stop
 
 
-def export_reponses(filename):
+def export_reponses(filename, with_private_data=False):
     ''' export the csv file '''
     from dispatcher.models import HotlineResponse, Topics
 
@@ -359,6 +359,9 @@ def export_reponses(filename):
                "location_type",
                "topics_list",
                "topics_count"] + [name_col(topic) for topic in topics]
+
+    if with_private_data:
+        headers = ["identity"] + headers
 
     csv_file = open(filename, 'w')
     csv_writer = unicodecsv.DictWriter(csv_file, headers, encoding='utf-8')
@@ -382,6 +385,9 @@ def export_reponses(filename):
                 "topics_count": response.topics.count()}
         for topic in topics:
             data.update({name_col(topic): "true" if topic in response.topics.all() else None})
+
+        if with_private_data:
+            data.update({"identity": response.request.identity})
 
         csv_writer.writerow(data)
 

@@ -19,17 +19,23 @@ class Command(BaseCommand):
                     action="store",
                     dest='filename',
                     default=None,
-                    help='Output file to write export to. Use .csv or .zip'),)
+                    help='Output file to write export to. Use .csv or .zip'),
+        make_option('-F', '--full',
+                    action="store_true",
+                    dest='full',
+                    default=False,
+                    help='Whether to export data with personnal numbers'))
 
     def handle(self, *args, **options):
 
         datestr = datetime.datetime.now().strftime('%Y-%m-%d-%Hh%M')
         filename = options.get('filename')
+        with_private_data = options.get('full', False)
 
         if filename is None:
             filename = "hotline_data_{date}.csv".format(date=datestr)
 
         if filename.endswith('.zip'):
-            print(zip_csv_reponses(filename))
+            print(zip_csv_reponses(filename, with_private_data=with_private_data))
         else:
-            print(export_reponses(filename))
+            print(export_reponses(filename, with_private_data=with_private_data))
