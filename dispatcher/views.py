@@ -500,7 +500,7 @@ def get_status_context():
                     'sex_male': sex_male,
                     'sex_female': sex_female,
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
-                                  for operator in Topics.CATEGORIES.items()],
+                                  for operator in operators()],
                     'topics_stats': [(cat, (HotlineResponse.objects.filter(topics__category=key).count(),
                                       HotlineResponse.objects.filter(topics__category=key).count() * 100 /
                                       HotlineResponse.objects.all().count()))
