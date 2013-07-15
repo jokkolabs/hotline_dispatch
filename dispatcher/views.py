@@ -500,7 +500,11 @@ def get_status_context():
                     'sex_male': sex_male,
                     'sex_female': sex_female,
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
-                                  for operator in operators()],
+                                  for operator in Topics.CATEGORIES.items()],
+                    'topics_stats': [(cat, (HotlineResponse.objects.filter(topics__category=key).count(),
+                                      HotlineResponse.objects.filter(topics__category=key).count() * 100 /
+                                      HotlineResponse.objects.all().count()))
+                                      for key, cat in Topics.CATEGORIES.items()],
                     'regions_located_responses': [(region, HotlineResponse.objects.filter(location__in=region.get_descendants(True))
                                                   .count()) for region in list(Entity.objects.filter(type='region'))] +
                                                  [("Inconnue", HotlineResponse.objects.filter(location=None).count())],

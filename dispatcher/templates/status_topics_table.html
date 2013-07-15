@@ -1,0 +1,20 @@
+{% load dispatcher %}
+
+{% if topics_stats %}
+<h2>Taux des questions par catégorie</h2>
+    <table class="table table-condensed table-hover table-bordered table-striped table-info">
+    <thead>
+    <tr>
+    <th class="span2">Catégorie</th>
+    <th class="span2">Taux (nombre)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cat, count in topics_stats %}
+        <tr><td>{{ cat }}</td>
+            <td><strong>{{ count.1|floatformat:2 }}% ({{ count.0 }})</strong></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endif %}
