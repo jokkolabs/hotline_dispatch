@@ -396,7 +396,7 @@ def export_reponses(filename, with_private_data=False):
     return filename
 
 
-def zip_csv_reponses(filename=None,):
+def zip_csv_reponses(filename=None, with_private_data=False):
     ''' compress and export the csv file '''
 
     from dispatcher.models import Topics
@@ -407,7 +407,7 @@ def zip_csv_reponses(filename=None,):
     zip_filename = "{}.zip".format(filename.rsplit('.', 1)[0])
 
     # Export csv file
-    export_reponses(csv_filename)
+    export_reponses(csv_filename, with_private_data=with_private_data)
 
     context = {'created_on': date_export,
                'topics': Topics.objects.all().order_by('slug')}
