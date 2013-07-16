@@ -491,6 +491,13 @@ def get_status_context():
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
+    def topic_stats(cat_slug):
+        name = Topics.CATEGORIES.get(cat_slug)
+        count = HotlineResponse.objects.filter(topics__category=cat_slug).count()
+        total = HotlineResponse.objects.all().count()
+        percent = count * 100 / total
+        return (name, (count, percent))
+
     context.update({'last_event': last_event,
                     'total_events': total_events,
                     'per_event_type': per_event_type,
@@ -501,10 +508,7 @@ def get_status_context():
                     'sex_female': sex_female,
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
                                   for operator in operators()],
-                    'topics_stats': [(cat, (HotlineResponse.objects.filter(topics__category=key).count(),
-                                      HotlineResponse.objects.filter(topics__category=key).count() * 100 /
-                                      HotlineResponse.objects.all().count()))
-                                      for key, cat in Topics.CATEGORIES.items()],
+                    'topics_stats': [topic_stats(cat_slug) for cat_slug in Topics.CATEGORIES.keys()],
                     'regions_located_responses': [(region, HotlineResponse.objects.filter(location__in=region.get_descendants(True))
                                                   .count()) for region in list(Entity.objects.filter(type='region'))] +
                                                  [("Inconnue", HotlineResponse.objects.filter(location=None).count())],

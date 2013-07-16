@@ -155,7 +155,7 @@ class Topics(models.Model):
 
     CATEGORIES = {
         HOTLINE: "Hotline",
-        DEMOCRACY: "Démocracie",
+        DEMOCRACY: "Démocratie",
         DECENTRALIZATION: "Décentralisation",
         FRAUD: "Fraude / Corruption",
         NINA_CARD: "Carte NINA",
