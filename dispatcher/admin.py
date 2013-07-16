@@ -53,7 +53,7 @@ class CustomUserAdmin(UserAdmin):
 
 class CustomHotlineEvent(admin.ModelAdmin):
     list_display = ("received_on", "operator", "identity", "event_type",
-                    "sms_message", "created_on",  "processed", "volunteer", "answer")
+                    "sms_message", "created_on",  "processed", "volunteer", "archived")
     list_filter = ("created_on", "event_type", "operator", "volunteer")
 
 
