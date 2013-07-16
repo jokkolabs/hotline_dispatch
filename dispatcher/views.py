@@ -86,7 +86,7 @@ def smssync(request):
     sent_timestamp = request.POST.get('sent_timestamp')
     try:
         received_on = datetime.datetime.fromtimestamp(int(sent_timestamp) / 1000)
-    except ValueError:
+    except (TypeError, ValueError):
         received_on = None
     event_type = event_type_from_message(request.POST.get('message'))
     identity = request.POST.get('from')

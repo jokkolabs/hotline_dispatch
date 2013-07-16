@@ -75,6 +75,8 @@ def is_valid_number(number):
     ''' checks if number is valid for HOTLINE_NUMBERS
 
         We want to get rid of operator spam '''
+    if number is None:
+        return False
     indicator, clean_number = clean_phone_number(number)
     return len(clean_number) >= NB_CHARS_VALID_NUMBER
 
