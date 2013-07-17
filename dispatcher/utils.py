@@ -398,37 +398,38 @@ def export_reponses(filename, with_private_data=False):
     return filename
 
 
-def zip_csv_reponses(filename=None, with_private_data=False):
+def zip_csv_reponses(filepath=None, with_private_data=False):
     ''' compress and export the csv file '''
 
     from dispatcher.models import Topics
 
     date_export = datetime.datetime.now()
 
-    csv_filename = "{}.csv".format(filename.rsplit('.', 1)[0])
-    zip_filename = "{}.zip".format(filename.rsplit('.', 1)[0])
+    csv_filepath = "{}.csv".format(filepath.rsplit('.', 1)[0])
+    zip_filepath = "{}.zip".format(filepath.rsplit('.', 1)[0])
+    csv_filename = os.path.split(csv_filepath)[-1]
 
     # Export csv file
-    export_reponses(csv_filename, with_private_data=with_private_data)
+    export_reponses(csv_filepath, with_private_data=with_private_data)
 
     context = {'created_on': date_export,
                'topics': Topics.objects.all().order_by('slug')}
 
     readme_content = loader.get_template('datapackage.json').render(Context(context))
 
-    zf = zipfile.ZipFile(zip_filename, mode='w')
+    zf = zipfile.ZipFile(zip_filepath, mode='w')
 
     readme_file = open('datapackage.json', "w")
     readme_file.write(readme_content.encode('utf-8'))
     readme_file.close()
 
-    zf.write(csv_filename)
+    zf.write(csv_filepath, csv_filename)
     zf.write(readme_file.name)
 
-    os.remove(csv_filename)
+    os.remove(csv_filepath)
     os.remove(readme_file.name)
 
-    return zip_filename
+    return zip_filepath
 
 
 def get_default_context(page=''):
