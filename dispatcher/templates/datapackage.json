@@ -1,6 +1,7 @@
 {
   "name": "hotline-sos-2013",
   "title": "Hotline SOS Démocratie 2013.",
+  "homepage": "http://datahub.io/dataset/hotline-sos-democratie",
   "description": "Liste des appels effectués par la Hotline SOS Démocratie/Jokkolabs en vue de l'élection présidentielle de Juillet 2013.\n Chaque appel fait suite à une demande d'une personne (bip ou SMS).",
   "readme": "Le fichier CSV ci-joint contient les données brutes de la Hotline SOS Démocratie.\n\n* Chaque ligne correspond à un appel de la hotline.\n* Les demandes d'appels non répondues (ou non saisies) ne sont pas présentes.\n* La liste des sujets avec codes est présente ci-dessous.\n* Les codes des localité correspondent à la BDD présente sur OpenData.ml.\n* Les numéros ne sont pas présents pour des raisons de confidentialité.",
   "download_url": "https://raw.github.com/opendatamali/sos_hotline_data/master/hotline_data.csv",
@@ -22,7 +23,7 @@
       "state": {
         "group": "received_on",
         "series": [
-          "Rate"
+          "topics_count"
         ]
       },
       "type": "Graph"
