@@ -138,7 +138,7 @@ def operator_from_mali_number(number, default=ORANGE):
 
     indicator, clean_number = clean_phone_number(number)
     if indicator is not None and indicator != str(COUNTRY_PREFIX):
-        return FOREIGN
+        return default
 
     malitel_prefixes = [2, 6, 98, 99]
     orange_prefixes = [7, 9, 4, 8, 90, 91]
@@ -182,7 +182,7 @@ def all_volunteers_numbers(operator=None):
     return numbers
 
 
-def clean_phone_number_str(number):
+def clean_phone_number_str(number, skip_indicator=None):
     ''' properly formated for visualization: (xxx) xx xx xx xx '''
 
     def format(number):
@@ -195,7 +195,7 @@ def clean_phone_number_str(number):
                         for i in range(0, len(number), span)])
 
     indicator, clean_number = clean_phone_number(number)
-    if indicator:
+    if indicator and indicator != skip_indicator:
         return "(%(ind)s) %(num)s" \
                % {'ind': indicator,
                   'num': format(clean_number)}

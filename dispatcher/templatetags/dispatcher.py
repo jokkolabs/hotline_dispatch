@@ -8,7 +8,7 @@ from __future__ import (unicode_literals, absolute_import,
 from django import template
 from django.template.defaultfilters import stringfilter
 
-from dispatcher.utils import clean_phone_number_str
+from dispatcher.utils import clean_phone_number_str, COUNTRY_PREFIX
 
 register = template.Library()
 
@@ -17,4 +17,4 @@ register = template.Library()
 @stringfilter
 def phone_number_formatter(number):
     ''' format phone number properly for display '''
-    return clean_phone_number_str(number)
+    return clean_phone_number_str(number, skip_indicator=COUNTRY_PREFIX)

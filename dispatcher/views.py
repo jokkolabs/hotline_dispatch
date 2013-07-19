@@ -483,11 +483,11 @@ def get_status_context():
                                (event_type[1],
                                 HotlineEvent.objects.filter(event_type=event_type[0]).count())})
 
-    untreated = HotlineEvent.objects.filter(processed=False,
-                                            event_type__in=HotlineEvent.HOTLINE_TYPES)
+    untreated = HotlineEvent.objects.filter(processed=False)
     untreated_count = untreated.count()
     not_archived = count_unarchived_sms()
-    sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count()
+    sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count() + \
+                  len([1 for e in HotlineEvent.objects.all() if e.archived == False])
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
