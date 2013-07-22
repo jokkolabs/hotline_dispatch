@@ -9,6 +9,8 @@
 
 {% include "status_topics_table.html" %}
 
+{% include "status_events_graph.html" %}
+
 {% if untreated %}
 <h2>Liste des événements non traités</h2>
     <table class="table table-condensed table-hover table-bordered table-striped">
@@ -28,8 +30,6 @@
     </tbody>
     </table>
 {% endif %}
-
-{% include "status_events_graph.html" %}
 
 {% endblock %}
 
