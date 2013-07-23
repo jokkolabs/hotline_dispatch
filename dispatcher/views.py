@@ -483,8 +483,7 @@ def get_status_context():
                                (event_type[1],
                                 HotlineEvent.objects.filter(event_type=event_type[0]).count())})
 
-    untreated = HotlineEvent.objects.filter(processed=False)
-    untreated_count = untreated.count()
+    untreated_count = HotlineEvent.objects.filter(processed=False).count()
     not_archived = count_unarchived_sms()
     sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count() + \
                   len([1 for e in HotlineEvent.objects.all() if e.archived == False])
@@ -501,7 +500,6 @@ def get_status_context():
     context.update({'last_event': last_event,
                     'total_events': total_events,
                     'per_event_type': per_event_type,
-                    'untreated': untreated,
                     'untreated_count': untreated_count,
                     'sex_unknown': sex_unknown,
                     'sex_male': sex_male,

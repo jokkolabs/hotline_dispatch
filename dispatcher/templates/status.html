@@ -11,26 +11,6 @@
 
 {% include "status_events_graph.html" %}
 
-{% if untreated %}
-<h2>Liste des événements non traités</h2>
-    <table class="table table-condensed table-hover table-bordered table-striped">
-    <thead>
-    <tr>
-    <th class="span2">Date &amp; Heure</th>
-    <th class="span2">Numéro</th>
-    <th class="span6">Type &amp; Message (SMS)</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for event in untreated %}
-        <tr><td>{{ event.received_on }}</td>
-            <td><strong>{{ event.identity|phone }}</strong></td>
-            <td><strong>{{ event.event_type }}</strong>{% if event.sms_message %}<br />{{ event.sms_message|default_if_none:"" }}{% endif %}</td>
-    {% endfor %}
-    </tbody>
-    </table>
-{% endif %}
-
 {% endblock %}
 
 {% block extra_js %}
