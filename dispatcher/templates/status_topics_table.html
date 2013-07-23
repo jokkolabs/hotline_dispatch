@@ -19,3 +19,24 @@
     </tbody>
     </table>
 {% endif %}
+
+{% if topics_stats_details %}
+<h2>Répartition des rappels par sujets</h2>
+<p class="alert alert-info"><strong>Attention</strong>, certains appels concernent plusieurs catégories ; la somme des pourcentages individuels dépasse donc 100%.</p>
+    <table class="table table-condensed table-hover table-bordered table-striped table-info">
+    <thead>
+    <tr>
+    <th class="span2">Sujet</th>
+    <th class="span2">Pourcentage du total (nombre)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cat_slug, category in topics_stats_details.items %}
+        <tr><th>{{ category.name }}</th><th>{{ category.percent|floatformat:2 }}% ({{ category.count }})</th></tr>
+        {% for t_name, t_count, t_percent in category.topics %}
+            <tr><td>{{ t_name }}</td><td>{{ t_percent|floatformat:2 }}% ({{ t_count }})</td></tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+    </table>
+{% endif %}

@@ -437,3 +437,31 @@ def get_default_context(page=''):
             'nbarchive': count_unarchived_sms(),
             'nbunprocessed': count_unprocessed(),
             'nbsms': count_unknown_sms()}
+
+
+def topic_stats(cat_slug):
+    from dispatcher.models import Topics, HotlineResponse
+    name = Topics.CATEGORIES.get(cat_slug)
+    count = HotlineResponse.objects.filter(topics__category=cat_slug).count()
+    total = HotlineResponse.objects.all().count()
+    percent = count * 100 / total
+    return (name, (count, percent))
+
+
+def topic_stats_details():
+    from dispatcher.models import Topics, HotlineResponse
+    topics_details = {}
+    for slug, name in Topics.CATEGORIES.items():
+        cat_name, cat_data = topic_stats(slug)
+        topics_details[slug] = {'name': name,
+                        'count': cat_data[0],
+                        'percent': cat_data[1],
+                        'topics': []}
+        for topic in Topics.objects.filter(category=slug):
+            name = topic.name
+            count = HotlineResponse.objects.filter(topics__slug=topic.slug).count()
+            total = HotlineResponse.objects.all().count()
+            percent = count * 100 / total
+            topics_details[slug]['topics'].append((name, count, percent))
+
+    return topics_details
