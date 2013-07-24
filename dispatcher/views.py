@@ -18,7 +18,7 @@ from batbelt import to_timestamp
 
 from dispatcher.models import (HotlineEvent, HotlineVolunteer, HotlineResponse,
                                Topics, Entity, BlackList)
-from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
+from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE,
                               operator_from_mali_number,
                               clean_phone_number,
                               make_ushahidi_request,
@@ -30,7 +30,7 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               datetime_range,
                               count_unarchived_sms,
                               get_default_context,
-                              EMPTY_ENTITY, topic_stats_details)
+                              EMPTY_ENTITY, topic_stats_details, regions_located_responses)
 
 Ring_anwers = []
 
@@ -53,8 +53,8 @@ def event_type_from_message(message):
         return HotlineEvent.TYPE_RING
     if len(message) < NB_CHARS_HOTLINE:
         return HotlineEvent.TYPE_SMS_HOTLINE
-    if len(message) > NB_CHARS_USHAHIDI:
-        return HotlineEvent.TYPE_SMS_USHAHIDI
+    # if len(message) > NB_CHARS_USHAHIDI:
+    #     return HotlineEvent.TYPE_SMS_USHAHIDI
     return HotlineEvent.TYPE_SMS_UNKNOWN
 
 
@@ -253,6 +253,7 @@ def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
                     'filters': [(HotlineEvent.TYPE_SMS_UNKNOWN, "À Trier"),
                                 (HotlineEvent.TYPE_SMS_HOTLINE, "Hotline"),
                                 (HotlineEvent.TYPE_SMS_USHAHIDI, "Ushahidi"),
+                                (HotlineEvent.TYPE_CHARGE_ME, "Peux-tu recharger mon compte?"),
                                 (HotlineEvent.TYPE_SMS_SPAM, "SPAM")],
                     'requested': True,
                     'nb_numbers': nb_numbers})
@@ -476,6 +477,7 @@ def get_status_context():
         last_event = []
 
     total_events = HotlineEvent.objects.count()
+    total_unique_number = HotlineEvent.objects.values('identity').distinct().count()
 
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
@@ -490,8 +492,13 @@ def get_status_context():
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
+    unknown_count = HotlineResponse.objects.filter(location=None).count()
+    total = HotlineResponse.objects.all().count()
+    unknown_percent = unknown_count * 100 / total
+
     context.update({'last_event': last_event,
                     'total_events': total_events,
+                    'total_unique_number': total_unique_number,
                     'per_event_type': per_event_type,
                     'untreated_count': untreated_count,
                     'sex_unknown': sex_unknown,
@@ -500,9 +507,9 @@ def get_status_context():
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
                                   for operator in operators()],
                     'topics_stats_details': topic_stats_details(),
-                    'regions_located_responses': [(region, HotlineResponse.objects.filter(location__in=region.get_descendants(True))
-                                                  .count()) for region in list(Entity.objects.filter(type='region'))] +
-                                                 [("Inconnue", HotlineResponse.objects.filter(location=None).count())],
+                    'regions_located_responses': [regions_located_responses(region)
+                                                  for region in list(Entity.objects.filter(type='region'))] +
+                                                 [("Inconnue", unknown_count, unknown_percent)],
                     'not_archived': not_archived})
     return context
 
