@@ -18,7 +18,7 @@ from batbelt import to_timestamp
 
 from dispatcher.models import (HotlineEvent, HotlineVolunteer, HotlineResponse,
                                Topics, Entity, BlackList)
-from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
+from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE,
                               operator_from_mali_number,
                               clean_phone_number,
                               make_ushahidi_request,
