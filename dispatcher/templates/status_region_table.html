@@ -10,9 +10,9 @@
     </tr>
     </thead>
     <tbody>
-    {% for region, count in regions_located_responses %}
+    {% for region, count, percent in regions_located_responses %}
         <tr><td>{{ region }}</td>
-            <td><strong>{{ count }}</strong></td>
+            <td><strong>{{ percent|floatformat:2 }}% ({{ count }})</strong></td>
         </tr>
     {% endfor %}
     </tbody>

@@ -30,7 +30,7 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE, NB_CHARS_USHAHIDI,
                               datetime_range,
                               count_unarchived_sms,
                               get_default_context,
-                              EMPTY_ENTITY, topic_stats_details)
+                              EMPTY_ENTITY, topic_stats_details, regions_located_responses)
 
 Ring_anwers = []
 
@@ -490,6 +490,10 @@ def get_status_context():
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
+    unknown_count = HotlineResponse.objects.filter(location=None).count()
+    total = HotlineResponse.objects.all().count()
+    unknown_percent = unknown_count * 100 / total
+
     context.update({'last_event': last_event,
                     'total_events': total_events,
                     'per_event_type': per_event_type,
@@ -500,9 +504,9 @@ def get_status_context():
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
                                   for operator in operators()],
                     'topics_stats_details': topic_stats_details(),
-                    'regions_located_responses': [(region, HotlineResponse.objects.filter(location__in=region.get_descendants(True))
-                                                  .count()) for region in list(Entity.objects.filter(type='region'))] +
-                                                 [("Inconnue", HotlineResponse.objects.filter(location=None).count())],
+                    'regions_located_responses': [regions_located_responses(region)
+                                                  for region in list(Entity.objects.filter(type='region'))] +
+                                                 [("Inconnue", unknown_count, unknown_percent)],
                     'not_archived': not_archived})
     return context
 
