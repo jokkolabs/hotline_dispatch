@@ -476,6 +476,7 @@ def get_status_context():
         last_event = []
 
     total_events = HotlineEvent.objects.count()
+    total_unique_number = HotlineEvent.objects.values('identity').distinct().count()
 
     per_event_type = {}
     for event_type in HotlineEvent.TYPES:
@@ -496,6 +497,7 @@ def get_status_context():
 
     context.update({'last_event': last_event,
                     'total_events': total_events,
+                    'total_unique_number': total_unique_number,
                     'per_event_type': per_event_type,
                     'untreated_count': untreated_count,
                     'sex_unknown': sex_unknown,
