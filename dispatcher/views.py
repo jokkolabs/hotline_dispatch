@@ -253,6 +253,7 @@ def sms_check(request, event_filter=HotlineEvent.TYPE_SMS_UNKNOWN):
                     'filters': [(HotlineEvent.TYPE_SMS_UNKNOWN, "À Trier"),
                                 (HotlineEvent.TYPE_SMS_HOTLINE, "Hotline"),
                                 (HotlineEvent.TYPE_SMS_USHAHIDI, "Ushahidi"),
+                                (HotlineEvent.TYPE_CHARGE_ME, "Peux-tu recharger mon compte?"),
                                 (HotlineEvent.TYPE_SMS_SPAM, "SPAM")],
                     'requested': True,
                     'nb_numbers': nb_numbers})
