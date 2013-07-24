@@ -53,8 +53,8 @@ def event_type_from_message(message):
         return HotlineEvent.TYPE_RING
     if len(message) < NB_CHARS_HOTLINE:
         return HotlineEvent.TYPE_SMS_HOTLINE
-    if len(message) > NB_CHARS_USHAHIDI:
-        return HotlineEvent.TYPE_SMS_USHAHIDI
+    # if len(message) > NB_CHARS_USHAHIDI:
+    #     return HotlineEvent.TYPE_SMS_USHAHIDI
     return HotlineEvent.TYPE_SMS_UNKNOWN
 
 
