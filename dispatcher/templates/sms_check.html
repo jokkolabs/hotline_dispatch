@@ -35,6 +35,7 @@
 			<td>
 				<p><a href="{% url 'sms_change_type' event.id 'SMS_HOTLINE' filter %}"><button class="btn btn-small"><i class="icon icon-headphones icon-"></i> Hotline</button></a></p>
 				<p><a href="{% url 'sms_change_type' event.id 'SMS_USHAHIDI' filter %}"><button class="btn btn-small"><i class="icon icon-map-marker"></i> Ushahidi</button></a></p>
+                <p><a href="{% url 'sms_change_type' event.id 'TYPE_CHARGE_ME' filter %}"><button class="btn btn-small"><i class="icon icon-headphones icon-"></i> Recharge</button></a></p>
 				<p><a href="{% url 'sms_change_type' event.id 'SMS_SPAM' filter %}"><button class="btn btn-danger btn-small delete-confirm" event_id="{{ event.id }}" event_identity="{{ event.identity|phone }}"><i class="icon icon-remove icon-white"></i> Supprimer</button></a></p></td>
 		</tr>
 	{% endfor %}

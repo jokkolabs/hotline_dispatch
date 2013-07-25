@@ -448,6 +448,14 @@ def topic_stats(cat_slug):
     return (name, (count, percent))
 
 
+def regions_located_responses(entity):
+    from dispatcher.models import HotlineResponse
+    count = HotlineResponse.objects.filter(location__in=entity.get_descendants(True)).count()
+    total = HotlineResponse.objects.all().count()
+    percent = count * 100 / total
+    return entity, count, percent
+
+
 def topic_stats_details():
     from dispatcher.models import Topics, HotlineResponse
     topics_details = {}
