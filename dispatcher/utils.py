@@ -359,6 +359,8 @@ def export_reponses(filename, with_private_data=False):
                "location",
                "location_slug",
                "location_type",
+               "latitude",
+               "longitude",
                "topics_list",
                "topics_count"] + [name_col(topic) for topic in topics]
 
@@ -382,6 +384,8 @@ def export_reponses(filename, with_private_data=False):
                 "location": response.location,
                 "location_slug": getattr(response.location, 'slug', None),
                 "location_type": getattr(response.location, 'type', None),
+                "latitude": getattr(response.location, 'latitude', None),
+                "longitude": getattr(response.location, 'longitude', None),
                 "topics_list": ", ".join([topic.get('slug', '')
                                           for topic in response.topics.values()]),
                 "topics_count": response.topics.count()}
