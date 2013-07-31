@@ -83,7 +83,7 @@ def smssync(request):
                                         'secret': settings.USHAHIDI_SECRET,
                                         'messages': [{'to': to, 'message': text}
                                                      for to, text in resp_messages]})
-            return HttpResponse(json.dumps(response), mimetype='application/json')
+        return HttpResponse(json.dumps(response), mimetype='application/json')
 
     if not request.method == 'POST':
         return http_response(True)
