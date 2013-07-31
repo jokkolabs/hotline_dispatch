@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django import forms
 
-from dispatcher.models import (HotlineEvent, HotlineVolunteer,
+from dispatcher.models import (HotlineEvent, HotlineVolunteer, ResponseSMS,
                                HotlineResponse, Entity, BlackList, Topics)
 
 
@@ -73,6 +73,11 @@ class CustomTopics(admin.ModelAdmin):
     list_filter = ("category",)
 
 
+class CustomResponseSMS(admin.ModelAdmin):
+    list_display = ("identity", "created_on", "sent_on", "status", "text",)
+    list_filter = ("status",)
+
+
 class CustomBlackList(admin.ModelAdmin):
     list_display = ("identity", "call_count",)
 
@@ -83,3 +88,4 @@ admin.site.register(HotlineResponse, CustomHotlineResponse)
 admin.site.register(Entity, CustomEntity)
 admin.site.register(BlackList, CustomBlackList)
 admin.site.register(Topics, CustomTopics)
+admin.site.register(ResponseSMS, CustomResponseSMS)
