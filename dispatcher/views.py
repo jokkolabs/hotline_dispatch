@@ -17,7 +17,7 @@ from django.contrib import messages
 from batbelt import to_timestamp
 
 from dispatcher.models import (HotlineEvent, HotlineVolunteer, HotlineResponse,
-                               Topics, Entity, BlackList)
+                               Topics, Entity, BlackList, ResponseSMS)
 from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE,
                               operator_from_mali_number,
                               clean_phone_number,
@@ -71,12 +71,19 @@ def smssync(request):
                     resp_messages.append((identity, ANSWER))
                 except IndexError:
                     break
+
+        for resp in ResponseSMS.objects.filter(status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
+            resp.status = ResponseSMS.STATUS_SENTOK
+            resp.date_sent = datetime.datetime.now()
+            resp.save()
+            resp_messages.append((resp.identity, resp.text))
+
         if resp_messages:
             response['payload'].update({'task': 'send',
                                         'secret': settings.USHAHIDI_SECRET,
                                         'messages': [{'to': to, 'message': text}
                                                      for to, text in resp_messages]})
-        return HttpResponse(json.dumps(response), mimetype='application/json')
+            return HttpResponse(json.dumps(response), mimetype='application/json')
 
     if not request.method == 'POST':
         return http_response(True)
