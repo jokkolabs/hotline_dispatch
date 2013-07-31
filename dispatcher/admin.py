@@ -74,7 +74,7 @@ class CustomTopics(admin.ModelAdmin):
 
 
 class CustomResponseSMS(admin.ModelAdmin):
-    list_display = ("identity", "created_on", "date_sent", "status", "text",)
+    list_display = ("identity", "created_on", "sent_on", "status", "text",)
     list_filter = ("status",)
 
 

@@ -13,7 +13,7 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('identity', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('created_on', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('date_sent', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('sent_on', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('status', self.gf('django.db.models.fields.CharField')(default=u'not_sent', max_length=50)),
             ('text', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
@@ -111,9 +111,9 @@ class Migration(SchemaMigration):
         u'dispatcher.responsesms': {
             'Meta': {'object_name': 'ResponseSMS'},
             'created_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'date_sent': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'identity': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'sent_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'not_sent'", 'max_length': '50'}),
             'text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },

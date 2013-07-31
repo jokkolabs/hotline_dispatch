@@ -74,7 +74,7 @@ def smssync(request):
 
         for resp in ResponseSMS.objects.filter(status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
             resp.status = ResponseSMS.STATUS_SENTOK
-            resp.date_sent = datetime.datetime.now()
+            resp.sent_on = datetime.datetime.now()
             resp.save()
             resp_messages.append((resp.identity, resp.text))
 

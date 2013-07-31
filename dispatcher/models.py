@@ -112,7 +112,7 @@ class ResponseSMS(models.Model):
 
     identity = models.CharField(max_length=30)
     created_on = models.DateTimeField(auto_now_add=True)
-    date_sent = models.DateTimeField(auto_now_add=True)
+    sent_on = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=50, choices=STATUSES.items(),
                               default=STATUS_NOTSENT)
     text = models.TextField(blank=True, null=True)
