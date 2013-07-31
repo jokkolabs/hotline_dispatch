@@ -183,6 +183,7 @@ HOTLINE_VOLUNTEERS_NUMBERS = {
 LOGIN_URL = '/login/'
 
 RESPONSE_SMS_NUMBER_MAX = 10
+RESPONSE_SMS_ENABLED = False
 
 try:
     from settings_local import *

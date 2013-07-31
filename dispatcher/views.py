@@ -72,11 +72,12 @@ def smssync(request):
                 except IndexError:
                     break
 
-        for resp in ResponseSMS.objects.filter(status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
-            resp.status = ResponseSMS.STATUS_SENTOK
-            resp.sent_on = datetime.datetime.now()
-            resp.save()
-            resp_messages.append((resp.identity, resp.text))
+        if settings.RESPONSE_SMS_ENABLED:
+            for resp in ResponseSMS.objects.filter(status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
+                resp.status = ResponseSMS.STATUS_SENTOK
+                resp.sent_on = datetime.datetime.now()
+                resp.save()
+                resp_messages.append((resp.identity, resp.text))
 
         if resp_messages:
             response['payload'].update({'task': 'send',
