@@ -15,9 +15,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         message = """Sos Democratie vous remercie pour votre participation
-                  massive au scrutin de dimanche. C'est encourageant pour
-                   le futur de notre patrie. Restez mobilises pour le
-                  retrait des cartes NINA et le RAVEC. Conservez ce climat
+                  massive au scrutin 1er tour. C'est encourageant pour
+                   le futur de notre patrie. Restons mobilises pour le
+                  retrait des cartes NINA et le 2eme tour. Conservons ce climat
                   apaise et democratique. Vive le Mali nouveau, uni,
                   pacifie, sur la voie d'un developpement durable."""
         for identity in HotlineEvent.objects.values('identity').distinct():
