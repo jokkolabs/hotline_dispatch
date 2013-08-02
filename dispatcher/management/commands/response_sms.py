@@ -15,8 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         message = """Sos Democratie vous remercie pour votre participation
-                  massive au scrutin 1er tour. C'est encourageant pour
-                   le futur de notre patrie. Restons mobilises pour le
+                  massive au scrutin du 1er tour. Restons mobilises pour le
                   retrait des cartes NINA et le 2eme tour. Conservons ce climat
                   apaise et democratique. Vive le Mali nouveau, uni,
                   pacifie, sur la voie d'un developpement durable."""
