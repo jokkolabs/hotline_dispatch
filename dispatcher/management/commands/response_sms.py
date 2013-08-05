@@ -21,11 +21,11 @@ class Command(BaseCommand):
                    "pacifie, sur la voie d'un developpement durable.")
         for identity in HotlineEvent.objects.values('identity').distinct():
             try:
-                existing = ResponseSMS.objects.get(identity=identity)
+                existing = ResponseSMS.objects.get(identity=identity.get('identity'))
             except ResponseSMS.DoesNotExist:
                 existing = None
 
             if not existing:
-                sms = ResponseSMS.objects.create(identity=identity,
+                sms = ResponseSMS.objects.create(identity=identity.get('identity'),
                                                  text=message)
                 print(identity.get('identity'))
