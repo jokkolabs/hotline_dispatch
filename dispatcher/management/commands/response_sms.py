@@ -14,11 +14,11 @@ class Command(BaseCommand):
     help = "Response SMS"
 
     def handle(self, *args, **kwargs):
-        message = """Sos Democratie vous remercie pour votre participation
-                  massive au scrutin du 1er tour. Restons mobilises pour le
-                  retrait des cartes NINA et le 2eme tour. Conservons ce climat
-                  apaise et democratique. Vive le Mali nouveau, uni,
-                  pacifie, sur la voie d'un developpement durable."""
+        message = ("Sos Democratie vous remercie pour votre participation "
+                   "massive au scrutin du 1er tour. Restons mobilises pour le "
+                   "retrait des cartes NINA et le 2eme tour. Conservons ce climat "
+                   "apaise et democratique. Vive le Mali nouveau, uni, "
+                   "pacifie, sur la voie d'un developpement durable.")
         for identity in HotlineEvent.objects.values('identity').distinct():
             try:
                 existing = ResponseSMS.objects.get(identity=identity)
