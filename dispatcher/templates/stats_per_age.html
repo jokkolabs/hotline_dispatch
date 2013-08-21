@@ -1,0 +1,43 @@
+{% load dispatcher %}
+
+<h2>Répartition des rappels par tranche d'âge</h2>
+    <table class="table table-condensed table-hover table-bordered table-striped table-info">
+    <thead>
+    <tr>
+    <th class="span2">Tranche d'âge</th>
+    <th class="span2">Taux (nombre)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td>moins de 18</td>
+        <td><strong>{{ under_18.1|floatformat:2 }}% ({{ under_18.0 }})</strong></td>
+    </tr>
+    <tr><td>de 19 à 25</td>
+        <td><strong>{{ stats_19_25.1|floatformat:2 }}% ({{ stats_19_25.0 }})</strong></td>
+    </tr>
+    <tr><td>de 26 à 30</td>
+        <td><strong>{{ stats_26_30.1|floatformat:2 }}% ({{ stats_26_30.0 }})</strong></td>
+    </tr>
+    <tr><td>de 31 à 35</td>
+        <td><strong>{{ stats_31_35.1|floatformat:2 }}% ({{ stats_31_35.0 }})</strong></td>
+    </tr>
+    <tr><td>de 36 à 40</td>
+        <td><strong>{{ stats_36_40.1|floatformat:2 }}% ({{ stats_36_40.0 }})</strong></td>
+    </tr>
+    <tr><td>de 41 à 45</td>
+        <td><strong>{{ stats_41_45.1|floatformat:2 }}% ({{ stats_41_45.0 }})</strong></td>
+    </tr>
+    <tr><td>de 46 à 50</td>
+        <td><strong>{{ stats_46_50.1|floatformat:2 }}% ({{ stats_46_50.0 }})</strong></td>
+    </tr>
+    <tr><td>de 51 à 55</td>
+        <td><strong>{{ stats_55_56.1|floatformat:2 }}% ({{ stats_55_56.0 }})</strong></td>
+    </tr>
+    <tr><td>56 et plus</td>
+        <td><strong>{{ other_56.1|floatformat:2 }}% ({{ other_56.0 }})</strong></td>
+    </tr>
+    <tr><td>Inconnus</td>
+        <td><strong>{{ unknown_age_percent|floatformat:2 }}% ({{ unknown_age }})</strong></td>
+    </tr>
+    </tbody>
+    </table>

@@ -29,7 +29,7 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE,
                               number_is_blacklisted,
                               datetime_range,
                               count_unarchived_sms,
-                              get_default_context,
+                              get_default_context, stats_per_age,
                               EMPTY_ENTITY, topic_stats_details, regions_located_responses)
 
 Ring_anwers = []
@@ -496,13 +496,26 @@ def get_status_context():
     untreated_count = HotlineEvent.objects.filter(processed=False).count()
     not_archived = count_unarchived_sms()
     sex_unknown = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_UNKNOWN).count() + \
-                  len([1 for e in HotlineEvent.objects.all() if e.archived == False])
+                                          len([1 for e in HotlineEvent.objects.all() if not e.archived])
     sex_male = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_MALE).count()
     sex_female = HotlineResponse.objects.filter(sex=HotlineResponse.SEX_FEMALE).count()
 
     unknown_count = HotlineResponse.objects.filter(location=None).count()
     total = HotlineResponse.objects.all().count()
     unknown_percent = unknown_count * 100 / total
+
+    under_18 = stats_per_age(0, 18)
+    stats_19_25 = stats_per_age(19, 25)
+    stats_26_30 = stats_per_age(26, 30)
+    stats_31_35 = stats_per_age(31, 35)
+    stats_36_40 = stats_per_age(36, 40)
+    stats_41_45 = stats_per_age(41, 45)
+    stats_46_50 = stats_per_age(46, 50)
+    stats_55_56 = stats_per_age(51, 55)
+    other_56 = stats_per_age(56, 180)
+
+    unknown_age = HotlineResponse.objects.filter(age=None).count()
+    unknown_age_percent = unknown_age * 100 / total
 
     context.update({'last_event': last_event,
                     'total_events': total_events,
@@ -514,6 +527,17 @@ def get_status_context():
                     'sex_female': sex_female,
                     'operators': [(operator, HotlineEvent.objects.filter(operator=operator).count())
                                   for operator in operators()],
+                    'under_18': under_18,
+                    'stats_19_25': stats_19_25,
+                    'stats_26_30': stats_26_30,
+                    'stats_31_35': stats_31_35,
+                    'stats_36_40': stats_36_40,
+                    'stats_41_45': stats_41_45,
+                    'stats_46_50': stats_46_50,
+                    'stats_55_56': stats_55_56,
+                    'other_56': other_56,
+                    'unknown_age': unknown_age,
+                    'unknown_age_percent': unknown_age_percent,
                     'topics_stats_details': topic_stats_details(),
                     'regions_located_responses': [regions_located_responses(region)
                                                   for region in list(Entity.objects.filter(type='region'))] +

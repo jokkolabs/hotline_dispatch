@@ -460,15 +460,25 @@ def regions_located_responses(entity):
     return entity, count, percent
 
 
+def stats_per_age(begin=0, end=0):
+    from dispatcher.models import HotlineResponse
+
+    count = HotlineResponse.objects.filter(age__gte=begin, age__lte=end).count()
+    total = HotlineResponse.objects.all().count()
+
+    percent = (count * 100) / total
+    return count, percent
+
+
 def topic_stats_details():
     from dispatcher.models import Topics, HotlineResponse
     topics_details = {}
     for slug, name in Topics.CATEGORIES.items():
         cat_name, cat_data = topic_stats(slug)
         topics_details[slug] = {'name': name,
-                        'count': cat_data[0],
-                        'percent': cat_data[1],
-                        'topics': []}
+                                'count': cat_data[0],
+                                'percent': cat_data[1],
+                                'topics': []}
         for topic in Topics.objects.filter(category=slug):
             name = topic.name
             count = HotlineResponse.objects.filter(topics__slug=topic.slug).count()
