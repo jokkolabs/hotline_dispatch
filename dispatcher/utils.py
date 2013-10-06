@@ -133,6 +133,10 @@ def join_phone_number(prefix, number, force_intl=True):
     return '+%s%s' % (prefix, number)
 
 
+def normalize_phone_number(number_text):
+    return join_phone_number(*clean_phone_number(number_text))
+
+
 def operator_from_mali_number(number, default=ORANGE):
     ''' ORANGE or MALITEL based on the number prefix '''
 
@@ -300,6 +304,9 @@ def send_email(recipients, message=None, template=None, context={},
 def send_notification(event):
 
     if event.processed:
+        return False
+
+    if not len(settings.NOTIFICATIONS_RECIPIENTS):
         return False
 
     title = "[HOTLINE SOS] Nouveau %s" % event.event_type
