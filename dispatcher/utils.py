@@ -448,7 +448,10 @@ def topic_stats(cat_slug):
     name = Topics.CATEGORIES.get(cat_slug)
     count = HotlineResponse.objects.filter(topics__category=cat_slug).count()
     total = HotlineResponse.objects.all().count()
-    percent = count * 100 / total
+    try:
+        percent = count * 100 / total
+    except ZeroDivisionError:
+        percent = 0
     return (name, (count, percent))
 
 
@@ -456,7 +459,10 @@ def regions_located_responses(entity):
     from dispatcher.models import HotlineResponse
     count = HotlineResponse.objects.filter(location__in=entity.get_descendants(True)).count()
     total = HotlineResponse.objects.all().count()
-    percent = count * 100 / total
+    try:
+        percent = count * 100 / total
+    except ZeroDivisionError:
+        percent = 0
     return entity, count, percent
 
 
@@ -465,8 +471,10 @@ def stats_per_age(begin=0, end=0):
 
     count = HotlineResponse.objects.filter(age__gte=begin, age__lte=end).count()
     total = HotlineResponse.objects.all().count()
-
-    percent = (count * 100) / total
+    try:
+        percent = (count * 100) / total
+    except ZeroDivisionError:
+        percent = 0
     return count, percent
 
 
@@ -483,7 +491,10 @@ def topic_stats_details():
             name = topic.name
             count = HotlineResponse.objects.filter(topics__slug=topic.slug).count()
             total = HotlineResponse.objects.all().count()
-            percent = count * 100 / total
+            try:
+                percent = count * 100 / total
+            except ZeroDivisionError:
+                percent = 0
             topics_details[slug]['topics'].append((name, count, percent))
 
     return topics_details
