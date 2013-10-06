@@ -73,7 +73,8 @@ def smssync(request):
                     break
 
         if settings.RESPONSE_SMS_ENABLED:
-            for resp in ResponseSMS.objects.filter(status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
+            for resp in ResponseSMS.objects.filter(
+                status=ResponseSMS.STATUS_NOTSENT)[:settings.RESPONSE_SMS_NUMBER_MAX]:
                 resp.status = ResponseSMS.STATUS_SENTOK
                 resp.sent_on = datetime.datetime.now()
                 resp.save()
@@ -502,7 +503,10 @@ def get_status_context():
 
     unknown_count = HotlineResponse.objects.filter(location=None).count()
     total = HotlineResponse.objects.all().count()
-    unknown_percent = unknown_count * 100 / total
+    try:
+        unknown_percent = unknown_count * 100 / total
+    except ZeroDivisionError:
+        unknown_percent = 0
 
     under_18 = stats_per_age(0, 18)
     stats_19_25 = stats_per_age(19, 25)
@@ -515,7 +519,10 @@ def get_status_context():
     other_56 = stats_per_age(56, 180)
 
     unknown_age = HotlineResponse.objects.filter(age=None).count()
-    unknown_age_percent = unknown_age * 100 / total
+    try:
+        unknown_age_percent = unknown_age * 100 / total
+    except ZeroDivisionError:
+        unknown_age_percent = 0
 
     context.update({'last_event': last_event,
                     'total_events': total_events,
