@@ -10,14 +10,20 @@ import json
 import smtplib
 import datetime
 import zipfile
+import py3compat
 
 import requests
-import unicodecsv
+if py3compat.PY2:
+    import unicodecsv as csv
+else:
+    import csv
 from django.conf import settings
 from django.core import mail
 from django.template import loader, Context
 from django.contrib.sites.models import Site
 from batbelt import to_timestamp
+
+
 
 
 ORANGE = 'orange'
@@ -375,7 +381,7 @@ def export_reponses(filename, with_private_data=False):
         headers = ["identity"] + headers
 
     csv_file = open(filename, 'w')
-    csv_writer = unicodecsv.DictWriter(csv_file, headers, encoding='utf-8')
+    csv_writer = csv.DictWriter(csv_file, headers, encoding='utf-8')
     csv_writer.writeheader()
 
     for response in HotlineResponse.objects.all():
@@ -407,6 +413,85 @@ def export_reponses(filename, with_private_data=False):
     csv_file.close()
 
     return filename
+
+
+def import_hotine_events(filename):
+    ''' import the csv file '''
+
+    from dispatcher.models import HotlineEvent
+
+    csv_line = None
+    nbok = 0
+
+    def error(message):
+        if csv_line is not None:
+            message = "ligne {}: {}".format(csv_line, message)
+        return {'success': False,
+                'error_message': message,
+                'nbok': nbok}
+
+    today = datetime.datetime.now()
+
+    headers = ["identity",
+               "date",
+               "heure",
+               "type"]
+
+    csv_file = open(filename, 'r')
+    csv_reader = csv.DictReader(csv_file, fieldnames=headers)
+
+
+
+    for entry in csv_reader:
+        if csv_reader.line_num == 1:
+            continue
+
+        identity = normalize_phone_number(entry.get('identity'))
+        operator = operator_from_mali_number(identity)
+        message = None
+        event_date = entry.get('date') # JJ/MM/
+        event_time = entry.get('heure')
+        event_type = entry.get('type')
+
+        if identity is None:
+            return error("Numero manquant")
+        if event_date is None:
+            return error("Date manquante")
+        if event_time is None:
+            return error("Heure manquante")
+        if event_type is None:
+            return error("Type manquant")
+        if not is_valid_number(identity):
+            return error("Numero erroné")
+
+        try:
+            day, month = event_date.split('/', 1)
+            hour, minute = event_time.split(':', 1)
+            event_dt = datetime.datetime(today.year, int(month), int(day),
+                                         int(hour), int(minute))
+        except Exception as e:
+            print(e)
+            return error("Date ou heure erronée")
+
+        if not event_type in list(HotlineEvent.HOTLINE_TYPES) + list(HotlineEvent.SMS_TYPES):
+            return error("Type incorrect")
+
+        # create HotlineEvent
+        try:
+            HotlineEvent.objects.create(
+            identity=identity,
+            event_type=event_type,
+            received_on=event_dt,
+            sms_message=message,
+            operator=operator)
+            nbok += 1
+        except:
+            pass
+        print(identity, event_dt, event_type)
+
+    csv_file.close()
+
+    return {'success': True, 'error_message': None, 'nbok': nbok}
 
 
 def zip_csv_reponses(filepath=None, with_private_data=False):

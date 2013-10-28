@@ -24,7 +24,8 @@
 	<button class="btn btn-small link {% ifequal page 'data_entry' %}active{% endifequal %}" href="{% url 'data_entry' %}">Saisie Appels <span class="label label-info">{{ nbarchive }}</span></button>
     <button class="btn btn-small link {% ifequal page 'status_page' %}active{% endifequal %}" href="{% url 'status' %}">Statut</button>
 	<button class="btn btn-small link {% ifequal page 'blacklist' %}active{% endifequal %}" href="{% url 'blacklist' %}">Liste noire</button>
-	<button class="btn btn-small link label label-warning" href="{% url 'logout' %}" title="Déconnexion ({{ user }})"><i class="icon icon-user"></i> Déconnexion</button>
+    <button class="btn btn-small link label label-warning" href="{% url 'import_event' %}" title="Import CSV">Import CSV</button>
+    <button class="btn btn-small link label label-warning" href="{% url 'logout' %}" title="Déconnexion ({{ user }})"><i class="icon icon-user"></i> Déconnexion</button>
 	<button class="btn btn-small link {% ifequal page 'password' %}active{% endifequal %}" href="{% url 'changepwd' %}" title="Changer mot de passe">Mot de passe</button>
 </div>
 </div>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load dispatcher %}
+
+{% block content %}
+<div id="context">
+<p>Cliquez sur <em>Parcourir…</em> et sélectionnez le fichier CSV que vous souhaitez ajouter.</p>
+
+{% if result %}
+{% if success %}
+<p class="alert alert-success">Fichier importé avec succes. {{nbok}} events crées</p>
+{% else %}
+<p class="alert alert-error">{{ error_message }}. {{nbok}} appels crées</p>
+{% endif %}
+{% endif %}
+
+<form method="POST" action="{% url 'import_event' %}" name="import_event" enctype="multipart/form-data">
+{% csrf_token %}
+<input name="csv_file" type="file" />
+<input type="submit" value="Envoyer le fichier" />
+</form>
+
+{% endblock %}
+

@@ -40,6 +40,7 @@ urlpatterns = patterns('',
 
     url(r'^status$', 'dispatcher.views.status', name='status'),
     url(r'^export$', 'dispatcher.views.exported_status', name='export'),
+    url(r'^import_event$', 'dispatcher.views.import_event', name='import_event'),
     url(r'^graph_data/$', 'dispatcher.views.graph_data', name='graph_data'),
 
     url(r'^entities/(?P<parent_slug>\d{8})/?$', 'dispatcher.views.entities_api', name='entities'),

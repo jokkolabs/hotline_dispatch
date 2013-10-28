@@ -29,7 +29,8 @@ from dispatcher.utils import (NB_NUMBERS, NB_CHARS_HOTLINE,
                               datetime_range,
                               count_unarchived_sms,
                               get_default_context, stats_per_age,
-                              EMPTY_ENTITY, topic_stats_details, regions_located_responses)
+                              EMPTY_ENTITY, topic_stats_details, regions_located_responses,
+                              import_hotine_events)
 
 
 @login_required()
@@ -393,6 +394,37 @@ def status(request):
     context.update(get_status_context())
 
     return render(request, "status.html", context)
+
+
+@login_required()
+def import_event(request):
+    context = get_default_context(page='import_event')
+
+    def handle_uploaded_file(f):
+        """ stores temporary file as a real file for form upload """
+        fname = '/tmp/form_%s.xls' % datetime.datetime.now().strftime('%s')
+        destination = open(fname, 'wb+')
+        for chunk in f.chunks():
+            destination.write(chunk)
+        destination.close()
+        return fname
+
+    context.update(get_status_context())
+
+    if request.method == "POST":
+
+        if 'csv_file' in request.FILES:
+            filepath = handle_uploaded_file(request.FILES['csv_file'])
+
+        try:
+            result = import_hotine_events(filepath)
+            context.update(result)
+        except UnboundLocalError:
+            context.update({'error_message': 'Aucun fichier sélectionné', 'nbok': 0})
+
+        context.update({"result": True})
+
+    return render(request, "import_event.html", context)
 
 
 def exported_status(request):
