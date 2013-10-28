@@ -429,15 +429,15 @@ def import_hotine_events(filename):
 
     today = datetime.datetime.now()
 
-    identity = "numero"
-    event_date = "date"
-    event_time = "heure"
-    event_type = "type"
+    identity_key = "numero"
+    event_date_key = "date"
+    event_time_key = "heure"
+    event_type_key = "type"
 
-    headers = [identity,
-               event_date,
-               event_time,
-               event_type]
+    headers = [identity_key,
+               event_date_key,
+               event_time_key,
+               event_type_key]
 
     csv_file = open(filename, 'r')
     csv_reader = unicodecsv.DictReader(csv_file, fieldnames=headers)
@@ -446,12 +446,17 @@ def import_hotine_events(filename):
         if csv_reader.line_num == 1:
             continue
 
-        identity = normalize_phone_number(entry.get(identity))
+        csv_line = csv_reader.line_num
+
+        print(csv_line)
+        print(entry)
+
+        identity = normalize_phone_number(entry.get(identity_key))
         operator = operator_from_mali_number(identity)
         message = None
-        event_date = entry.get(event_date) # JJ/MM
-        event_time = entry.get(event_time)
-        event_type = entry.get(event_type)
+        event_date = entry.get(event_date_key) # JJ/MM
+        event_time = entry.get(event_time_key)
+        event_type = entry.get(event_type_key)
 
         if identity is None:
             return error("Numero manquant")
