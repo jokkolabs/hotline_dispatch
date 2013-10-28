@@ -13,10 +13,7 @@ import zipfile
 import py3compat
 
 import requests
-if py3compat.PY2:
-    import unicodecsv as csv
-else:
-    import csv
+import unicodecsv
 from django.conf import settings
 from django.core import mail
 from django.template import loader, Context
@@ -381,7 +378,7 @@ def export_reponses(filename, with_private_data=False):
         headers = ["identity"] + headers
 
     csv_file = open(filename, 'w')
-    csv_writer = csv.DictWriter(csv_file, headers, encoding='utf-8')
+    csv_writer = unicodecsv.DictWriter(csv_file, headers, encoding='utf-8')
     csv_writer.writeheader()
 
     for response in HotlineResponse.objects.all():
@@ -432,26 +429,29 @@ def import_hotine_events(filename):
 
     today = datetime.datetime.now()
 
-    headers = ["identity",
-               "date",
-               "heure",
-               "type"]
+    identity = "numero"
+    event_date = "date"
+    event_time = "heure"
+    event_type = "type"
+
+    headers = [identity,
+               event_date,
+               event_time,
+               event_type]
 
     csv_file = open(filename, 'r')
-    csv_reader = csv.DictReader(csv_file, fieldnames=headers)
-
-
-
+    csv_reader = unicodecsv.DictReader(csv_file, fieldnames=headers)
+    print(csv_reader)
     for entry in csv_reader:
         if csv_reader.line_num == 1:
             continue
 
-        identity = normalize_phone_number(entry.get('identity'))
+        identity = normalize_phone_number(entry.get(identity))
         operator = operator_from_mali_number(identity)
         message = None
-        event_date = entry.get('date') # JJ/MM/
-        event_time = entry.get('heure')
-        event_type = entry.get('type')
+        event_date = entry.get(event_date) # JJ/MM
+        event_time = entry.get(event_time)
+        event_type = entry.get(event_type)
 
         if identity is None:
             return error("Numero manquant")
